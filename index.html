@@ -1,0 +1,2862 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="artifact-type" content="tool">
+  <meta name="design-style" content="charter">
+  <title>Hệ thống Ôn thi &amp; Tra cứu Nghiệp vụ Chuyên môn về Đấu thầu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+
+      /* Page and surfaces (Charter) */
+      --background: #f7f4ec;
+      --surface-container-low: #fffdf8;
+      --surface-container: #ece5d4;
+      --surface-container-high: #e3dac4;
+
+      /* Ink */
+      --on-surface: #1c1f26;
+      --on-surface-variant: #4f5360;
+
+      /* Rules */
+      --outline: #b08d57;
+      --outline-variant: #d9cfb8;
+
+      /* Accents */
+      --primary: #14213d;
+      --on-primary: #f7f4ec;
+      --primary-container: #e3e6ee;
+      --on-primary-container: #14213d;
+      --secondary: #2d5a4a;
+      --tertiary: #8a6a35;
+      --error: #9b2c2c;
+      --on-error: #f7f4ec;
+
+      /* Semantic & Data */
+      --positive: #2d5a4a;
+      --positive-bg: #e6f0ec;
+      --warning: #8a6a35;
+      --warning-bg: #f5eedc;
+      --error-bg: #f9e8e8;
+      --focus: #14213d;
+
+      --data-1: #14213d;
+      --data-2: #8a6a35;
+      --data-3: #2d5a4a;
+      --data-4: #5b7aa0;
+      --data-context: #c2bba9;
+
+      /* Fonts */
+      --font-headline: 'Noto Serif', serif;
+      --font-body: 'Inter', sans-serif;
+      --font-label: 'Inter', sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+
+      /* Shape */
+      --rounded: 0.125rem;
+      --rounded-lg: 0.125rem;
+      --rounded-full: 0.125rem;
+
+      /* Style effects */
+      --brass-rule: 2px solid var(--outline);
+      --hairline: 1px solid var(--outline-variant);
+      --leaf-underline: 0 1px 0 var(--outline-variant);
+      --title-band-border: 3px solid var(--outline);
+      --focus-ring: 2px solid var(--focus);
+
+      /* Type scale (Focused Tool) */
+      --display-size: clamp(1.65rem, 1.3rem + 1.1vw, 2.25rem);
+      --headline-size: clamp(1.2rem, 1.05rem + 0.45vw, 1.45rem);
+      --subhead-size: clamp(1.02rem, 0.96rem + 0.22vw, 1.15rem);
+      --body-size: clamp(0.9375rem, 0.9rem + 0.15vw, 1rem);
+      --label-size: 0.75rem;
+
+      /* Spacing scale */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2.5rem;
+      --space-2xl: 4rem;
+
+      /* Motion */
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+      --dur-micro: 120ms;
+      --dur-short: 220ms;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      overflow-x: clip;
+      margin: 0;
+      padding: 0;
+      background: var(--background);
+      color: var(--on-surface);
+      font-family: var(--font-body);
+      font-size: var(--body-size);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    header { position: static !important; }
+
+    button, input, select, textarea {
+      font-family: inherit;
+      font-size: inherit;
+    }
+
+    :focus-visible {
+      outline: var(--focus-ring);
+      outline-offset: 2px;
+    }
+
+    /* Header / Title Band */
+    .title-band {
+      background: var(--primary);
+      color: var(--on-primary);
+      padding: var(--space-xl) var(--space-lg) var(--space-lg);
+      border-bottom: var(--title-band-border);
+    }
+    .title-band-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .kicker {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: color-mix(in srgb, var(--outline) 80%, var(--on-primary));
+      margin-bottom: var(--space-xs);
+    }
+    .title-band h1 {
+      font-family: var(--font-headline);
+      font-weight: 400;
+      font-size: var(--display-size);
+      line-height: 1.15;
+      margin: 0 0 var(--space-sm) 0;
+      letter-spacing: -0.01em;
+      color: var(--on-primary);
+    }
+    .title-band .lede {
+      color: color-mix(in srgb, var(--on-primary) 82%, var(--primary));
+      max-width: 72ch;
+      margin: 0;
+      font-size: var(--body-size);
+    }
+
+    /* Mode navigation strip */
+    .mode-bar {
+      background: var(--surface-container-low);
+      border-bottom: var(--hairline);
+    }
+    .mode-bar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+    }
+    .mode-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-lg);
+    }
+    .mode-tab {
+      background: transparent;
+      border: 0;
+      border-bottom: 3px solid transparent;
+      padding: var(--space-md) var(--space-xs);
+      min-height: 44px;
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--on-surface-variant);
+      cursor: pointer;
+      transition: color var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out);
+    }
+    .mode-tab:hover { color: var(--primary); }
+    .mode-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--outline);
+    }
+    .legal-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+    }
+    .stamp-tag {
+      display: inline-block;
+      padding: 2px var(--space-sm);
+      border: 1px solid var(--outline);
+      color: var(--tertiary);
+      background: transparent;
+      border-radius: var(--rounded);
+      font-size: var(--label-size);
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    /* Main container */
+    .page-grid {
+      display: grid;
+      gap: var(--space-lg);
+      padding: var(--space-lg);
+      max-width: 1200px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+    .page-grid * { min-width: 0; }
+
+    /* KPI / Summary strip */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+      gap: var(--space-md);
+    }
+    .figure-card {
+      background: var(--surface-container-low);
+      border-top: var(--brass-rule);
+      box-shadow: var(--leaf-underline);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-md) var(--space-lg);
+    }
+    .figure-label {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--on-surface-variant);
+      margin-bottom: var(--space-xs);
+    }
+    .figure-value {
+      font-family: var(--font-headline);
+      font-weight: 400;
+      font-size: var(--headline-size);
+      font-variant-numeric: tabular-nums lining-nums;
+      color: var(--on-surface);
+      line-height: 1.2;
+    }
+    .figure-delta {
+      font-size: 0.8125rem;
+      color: var(--tertiary);
+      font-weight: 600;
+      margin-top: var(--space-xs);
+    }
+    .figure-delta.positive { color: var(--positive); }
+
+    /* Section Head */
+    .section-head {
+      border-top: var(--brass-rule);
+      padding-top: var(--space-md);
+      border-bottom: var(--hairline);
+      padding-bottom: var(--space-sm);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--space-sm);
+    }
+    .section-head h2 {
+      font-family: var(--font-headline);
+      font-weight: 400;
+      font-size: var(--headline-size);
+      margin: 0;
+      color: var(--on-surface);
+    }
+    .section-meta {
+      font-size: 0.875rem;
+      color: var(--on-surface-variant);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-xs);
+      min-height: 44px;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--rounded);
+      font-family: var(--font-label);
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out);
+    }
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: var(--on-primary);
+      border-color: var(--primary);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--primary) 88%, var(--on-surface));
+    }
+    .btn-secondary {
+      background: transparent;
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--primary-container);
+    }
+    .btn-ghost {
+      background: var(--surface-container);
+      color: var(--on-surface);
+      border-color: var(--outline-variant);
+    }
+    .btn-ghost:hover:not(:disabled) {
+      background: var(--surface-container-high);
+    }
+    .btn-danger {
+      background: transparent;
+      color: var(--error);
+      border-color: var(--error);
+    }
+    .btn-danger:hover:not(:disabled) {
+      background: var(--error-bg);
+    }
+
+    /* Inputs & Filters */
+    .controls-panel {
+      background: var(--surface-container-low);
+      border-top: var(--brass-rule);
+      box-shadow: var(--leaf-underline);
+      padding: var(--space-lg);
+      display: grid;
+      gap: var(--space-md);
+    }
+    .controls-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+      gap: var(--space-md);
+      align-items: end;
+    }
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+    .field-label {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--on-surface-variant);
+    }
+    .field-input, .field-select {
+      width: 100%;
+      min-height: 44px;
+      padding: var(--space-sm) var(--space-md);
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--rounded);
+      color: var(--on-surface);
+    }
+    .field-select {
+      padding-right: var(--space-xl);
+    }
+    .field-input:focus, .field-select:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 2px var(--primary-container);
+    }
+
+    /* Workspace split for Exam and Practice */
+    .workspace-split {
+      display: grid;
+      grid-template-columns: minmax(0, 2.2fr) minmax(260px, 1fr);
+      gap: var(--space-lg);
+      align-items: start;
+    }
+
+    /* Question Card */
+    .question-card {
+      background: var(--surface-container-low);
+      border-top: var(--brass-rule);
+      box-shadow: var(--leaf-underline);
+      padding: var(--space-lg);
+      border-radius: var(--rounded-lg);
+    }
+    .q-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-sm);
+      padding-bottom: var(--space-sm);
+      border-bottom: var(--hairline);
+      margin-bottom: var(--space-md);
+    }
+    .q-num {
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--primary);
+    }
+    .q-text {
+      font-family: var(--font-headline);
+      font-size: var(--subhead-size);
+      font-weight: 700;
+      line-height: 1.5;
+      color: var(--on-surface);
+      margin: 0 0 var(--space-lg) 0;
+    }
+    .options-list {
+      display: grid;
+      gap: var(--space-sm);
+    }
+    .option-btn {
+      width: 100%;
+      min-height: 48px;
+      text-align: left;
+      display: grid;
+      grid-template-columns: 32px minmax(0, 1fr);
+      gap: var(--space-sm);
+      align-items: start;
+      padding: var(--space-md);
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--rounded);
+      color: var(--on-surface);
+      cursor: pointer;
+      transition: background-color var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out);
+    }
+    .option-btn:hover:not(:disabled) {
+      background: var(--surface-container);
+      border-color: var(--outline);
+    }
+    .option-btn.selected {
+      background: var(--primary-container);
+      border-color: var(--primary);
+      box-shadow: inset 3px 0 0 var(--primary);
+    }
+    .option-btn.correct {
+      background: var(--positive-bg);
+      border-color: var(--positive);
+      box-shadow: inset 3px 0 0 var(--positive);
+    }
+    .option-btn.wrong {
+      background: var(--error-bg);
+      border-color: var(--error);
+      box-shadow: inset 3px 0 0 var(--error);
+    }
+    .option-key {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .option-btn.correct .option-key { color: var(--positive); }
+    .option-btn.wrong .option-key { color: var(--error); }
+
+    /* Explanation Box */
+    .explanation-box {
+      margin-top: var(--space-lg);
+      padding: var(--space-md);
+      background: var(--background);
+      border-left: 3px solid var(--outline);
+      border-top: var(--hairline);
+      border-right: var(--hairline);
+      border-bottom: var(--hairline);
+    }
+    .explanation-title {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--tertiary);
+      margin-bottom: var(--space-xs);
+    }
+    .legal-cite {
+      margin-top: var(--space-sm);
+      padding-top: var(--space-sm);
+      border-top: var(--hairline);
+      font-size: 0.875rem;
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    /* Sidebar Panel */
+    .side-panel {
+      background: var(--surface-container-low);
+      border-top: var(--brass-rule);
+      box-shadow: var(--leaf-underline);
+      padding: var(--space-lg);
+      display: grid;
+      gap: var(--space-md);
+    }
+    .timer-box {
+      padding: var(--space-md);
+      background: var(--surface-container);
+      border: 1px solid var(--outline-variant);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .timer-value {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+      color: var(--primary);
+    }
+    .timer-value.urgent { color: var(--error); }
+
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+      gap: var(--space-sm);
+    }
+    .palette-item {
+      min-height: 44px;
+      padding: 0;
+      border: 1px solid var(--outline-variant);
+      background: var(--surface-container-low);
+      color: var(--on-surface);
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      cursor: pointer;
+      position: relative;
+      border-radius: var(--rounded);
+    }
+    .palette-item.current {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-container);
+      font-weight: 700;
+    }
+    .palette-item.answered {
+      background: var(--primary);
+      color: var(--on-primary);
+      border-color: var(--primary);
+    }
+    .palette-item.correct-mark {
+      background: var(--positive);
+      color: var(--on-primary);
+      border-color: var(--positive);
+    }
+    .palette-item.wrong-mark {
+      background: var(--error);
+      color: var(--on-error);
+      border-color: var(--error);
+    }
+    .palette-item.flagged::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 6px;
+      height: 6px;
+      background: var(--outline);
+    }
+
+    /* Tables */
+    .table-wrap {
+      overflow-x: auto;
+      background: var(--surface-container-low);
+      border-top: var(--brass-rule);
+      box-shadow: var(--leaf-underline);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    th {
+      background: var(--surface-container-high);
+      text-align: left;
+      padding: var(--space-sm) var(--space-md);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--on-surface-variant);
+      border-bottom: 1px solid var(--outline);
+    }
+    td {
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: var(--hairline);
+      vertical-align: top;
+    }
+    td.num, th.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .status-pass {
+      color: var(--positive);
+      font-weight: 600;
+    }
+    .status-fail {
+      color: var(--error);
+      font-weight: 600;
+    }
+
+    /* Lookup cards */
+    .bank-list {
+      display: grid;
+      gap: var(--space-md);
+    }
+    .bank-item {
+      background: var(--surface-container-low);
+      border-top: var(--brass-rule);
+      box-shadow: var(--leaf-underline);
+      padding: var(--space-lg);
+    }
+    .bank-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+      gap: var(--space-xs) var(--space-md);
+      margin: var(--space-md) 0;
+      padding: 0;
+      list-style: none;
+    }
+    .bank-opt {
+      padding: var(--space-xs) var(--space-sm);
+      border-left: 2px solid var(--outline-variant);
+      font-size: 0.9375rem;
+    }
+    .bank-opt.is-answer {
+      border-left-color: var(--positive);
+      background: var(--positive-bg);
+      font-weight: 600;
+      color: var(--positive);
+    }
+
+    .nav-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-top: var(--space-lg);
+      padding-top: var(--space-md);
+      border-top: var(--hairline);
+    }
+    .action-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+    .inline-notice {
+      padding: var(--space-sm) var(--space-md);
+      background: var(--warning-bg);
+      border-left: 3px solid var(--outline);
+      font-size: 0.875rem;
+      color: var(--on-surface);
+    }
+    .hidden { display: none !important; }
+
+    /* Bar chart */
+    .topic-bar-row {
+      display: grid;
+      grid-template-columns: minmax(150px, 1.3fr) minmax(120px, 2fr) 72px;
+      gap: var(--space-md);
+      align-items: center;
+      padding: var(--space-xs) 0;
+    }
+    .bar-track {
+      height: 12px;
+      background: var(--surface-container);
+      position: relative;
+    }
+    .bar-fill {
+      height: 100%;
+      background: var(--data-1);
+      transition: width var(--dur-short) var(--ease-out);
+    }
+    .bar-fill.pass { background: var(--positive); }
+    .bar-fill.fail { background: var(--error); }
+
+    .source-footer {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--space-lg);
+      border-top: var(--hairline);
+      font-size: 0.8125rem;
+      color: var(--on-surface-variant);
+    }
+
+    @media (max-width: 860px) {
+      .workspace-split {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 640px) {
+      .page-grid {
+        padding: var(--space-md);
+        gap: var(--space-md);
+      }
+      .title-band {
+        padding: var(--space-lg) var(--space-md);
+      }
+      .topic-bar-row {
+        grid-template-columns: 1fr;
+        gap: var(--space-xs);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="title-band">
+    <div class="title-band-inner">
+      <div class="kicker">Ngân hàng câu hỏi thi nghiệp vụ chuyên môn · Thông báo 2775/TB-QLĐT</div>
+      <h1>Ôn thi &amp; Tra cứu Pháp luật Đấu thầu</h1>
+      <p class="lede">
+        Công cụ luyện thi thử có bấm giờ, đánh giá Đạt/Không đạt và tra cứu căn cứ pháp lý theo Luật Đấu thầu 22/2023/QH15 (sửa đổi theo Luật 57/2024/QH15, Luật 90/2025/QH15), Nghị định 214/2025/NĐ-CP, Thông tư 22/2024/TT-BKHĐT, Thông tư 79/2025/TT-BTC và Thông tư 06/2021/TT-BXD.
+      </p>
+    </div>
+  </header>
+
+  <nav class="mode-bar" aria-label="Chế độ làm việc">
+    <div class="mode-bar-inner">
+      <div class="mode-tabs">
+        <button type="button" class="mode-tab active" id="tab-exam" onclick="switchMode('exam')">Thi thử ngẫu nhiên</button>
+        <button type="button" class="mode-tab" id="tab-practice" onclick="switchMode('practice')">Luyện tập theo chuyên đề</button>
+        <button type="button" class="mode-tab" id="tab-lookup" onclick="switchMode('lookup')">Tra cứu ngân hàng &amp; Pháp lý</button>
+      </div>
+      <div class="legal-badges">
+        <span class="stamp-tag">70 câu trọng tâm (từ ngân hàng 430 câu)</span>
+        <span class="stamp-tag">Ngưỡng đạt ≥ 70%</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="page-grid">
+    <!-- Top Summary KPIs -->
+    <section class="kpi-grid" aria-label="Tổng quan tiến độ">
+      <div class="figure-card">
+        <div class="figure-label">Bộ câu hỏi trực tuyến</div>
+        <div class="figure-value" id="kpi-bank-count">0 câu</div>
+        <div class="figure-delta">Trích lọc đầy đủ 7 chuyên đề trọng tâm</div>
+      </div>
+      <div class="figure-card">
+        <div class="figure-label">Số lượt thi đã hoàn thành</div>
+        <div class="figure-value" id="kpi-attempts">0 lượt</div>
+        <div class="figure-delta" id="kpi-pass-rate">Chưa có bài thi nộp</div>
+      </div>
+      <div class="figure-card">
+        <div class="figure-label">Điểm cao nhất</div>
+        <div class="figure-value" id="kpi-best-score">—</div>
+        <div class="figure-delta positive" id="kpi-best-status">Mục tiêu đạt chứng chỉ: ≥ 70%</div>
+      </div>
+      <div class="figure-card">
+        <div class="figure-label">Câu đã ôn &amp; đánh dấu</div>
+        <div class="figure-value" id="kpi-mastered">0 câu</div>
+        <div class="figure-delta" id="kpi-flagged">0 câu đang đánh dấu xem lại</div>
+      </div>
+    </section>
+
+    <!-- MODE 1: MOCK EXAM -->
+    <section id="view-exam">
+      <div class="section-head">
+        <h2>Chế độ Thi thử Nghiệp vụ Đấu thầu</h2>
+        <span class="section-meta">Đề thi ngẫu nhiên có đồng hồ đếm ngược, chấm điểm và phân tích kết quả theo từng chuyên đề</span>
+      </div>
+
+      <!-- Exam Config Panel -->
+      <div class="controls-panel" id="exam-setup-panel" style="margin-top: var(--space-md);">
+        <div class="controls-row">
+          <div class="field-group">
+            <label class="field-label" for="exam-topic">Phạm vi chuyên đề</label>
+            <select class="field-select" id="exam-topic">
+              <option value="all">Tất cả 7 chuyên đề (Đề tổng hợp chuẩn)</option>
+              <option value="Pháp luật chung">1. Pháp luật chung &amp; Phạm vi điều chỉnh</option>
+              <option value="Kế hoạch lựa chọn nhà thầu">2. Kế hoạch lựa chọn nhà thầu</option>
+              <option value="Quy trình lựa chọn nhà thầu qua mạng">3. Quy trình &amp; Đánh giá qua mạng / không qua mạng</option>
+              <option value="Hợp đồng">4. Hợp đồng &amp; Bảo đảm thực hiện</option>
+              <option value="Mua sắm trực tuyến/tập trung">5. Mua sắm trực tuyến, tập trung &amp; Điều ước quốc tế</option>
+              <option value="Giải quyết kiến nghị & xử lý tình huống">6. Kiến nghị, Giám sát &amp; Xử lý tình huống</option>
+              <option value="Lựa chọn nhà đầu tư">7. Lựa chọn nhà đầu tư</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="exam-count">Số lượng câu hỏi</label>
+            <select class="field-select" id="exam-count">
+              <option value="15">15 câu (Thi nhanh — 15 phút)</option>
+              <option value="30" selected>30 câu (Thi tiêu chuẩn — 30 phút)</option>
+              <option value="50">50 câu (Mô phỏng sát hạch — 60 phút)</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="exam-minutes">Thời gian làm bài (phút)</label>
+            <input type="number" class="field-input" id="exam-minutes" min="5" max="90" value="30">
+          </div>
+          <div class="field-group">
+            <button type="button" class="btn btn-primary" onclick="startExam()">Bắt đầu làm đề thi</button>
+          </div>
+        </div>
+        <div class="inline-notice" id="exam-setup-note">
+          Lưu ý: Điểm đạt chuẩn nghiệp vụ là từ 70% số câu trả lời đúng trở lên. Hệ thống tự động lưu lịch sử bài thi để bạn theo dõi tiến bộ qua từng lần luyện.
+        </div>
+      </div>
+
+      <!-- Active Exam Workspace -->
+      <div id="exam-active-panel" class="hidden" style="margin-top: var(--space-md);">
+        <div class="workspace-split">
+          <div>
+            <div class="question-card" id="exam-question-card">
+              <div class="q-meta">
+                <span class="q-num" id="exam-q-num">Câu 1 / 30</span>
+                <div class="action-group">
+                  <span class="stamp-tag" id="exam-q-topic">Chuyên đề</span>
+                  <button type="button" class="btn btn-ghost" id="exam-flag-btn" onclick="toggleExamFlag()" style="padding: 4px 12px; font-size: 0.75rem;">Đánh dấu xem lại</button>
+                </div>
+              </div>
+              <p class="q-text" id="exam-q-text"></p>
+              <div class="options-list" id="exam-options-list"></div>
+              <div class="explanation-box hidden" id="exam-explanation">
+                <div class="explanation-title">Giải thích &amp; Căn cứ pháp lý</div>
+                <div id="exam-explanation-body"></div>
+                <div class="legal-cite" id="exam-legal-cite"></div>
+              </div>
+              <div class="nav-actions">
+                <div class="action-group">
+                  <button type="button" class="btn btn-secondary" id="exam-prev-btn" onclick="moveExamQuestion(-1)">Câu trước</button>
+                  <button type="button" class="btn btn-secondary" id="exam-next-btn" onclick="moveExamQuestion(1)">Câu tiếp theo</button>
+                </div>
+                <div class="action-group">
+                  <button type="button" class="btn btn-primary" id="exam-submit-btn" onclick="submitExam(this)">Nộp bài thi</button>
+                  <button type="button" class="btn btn-ghost hidden" id="exam-new-btn" onclick="resetToExamSetup()">Tạo đề thi mới</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <aside class="side-panel" aria-label="Bảng theo dõi câu hỏi">
+            <div class="timer-box">
+              <div>
+                <div class="figure-label" style="margin:0;">Thời gian còn lại</div>
+                <div style="font-size: 0.75rem; color: var(--on-surface-variant);" id="exam-progress-text">Đã trả lời 0/30</div>
+              </div>
+              <div class="timer-value" id="exam-timer">30:00</div>
+            </div>
+
+            <div>
+              <div class="figure-label">Danh sách câu hỏi</div>
+              <div class="palette-grid" id="exam-palette"></div>
+            </div>
+
+            <div style="font-size: 0.75rem; color: var(--on-surface-variant); border-top: var(--hairline); padding-top: var(--space-sm);">
+              Ô xanh đậm: đã chọn đáp án · Góc vàng đồng: đánh dấu xem lại. Nhấn số câu để chuyển nhanh.
+            </div>
+          </aside>
+        </div>
+
+        <!-- Result Summary Panel -->
+        <div id="exam-result-panel" class="hidden" style="margin-top: var(--space-lg);">
+          <div class="section-head">
+            <h2>Kết quả Sát hạch &amp; Phân tích Chuyên đề</h2>
+            <div class="action-group">
+              <button type="button" class="btn btn-secondary" onclick="exportExamReport()">Xuất biên bản kết quả (.csv)</button>
+            </div>
+          </div>
+
+          <div class="kpi-grid" style="margin-top: var(--space-md);">
+            <div class="figure-card">
+              <div class="figure-label">Kết luận sát hạch</div>
+              <div class="figure-value" id="res-verdict">—</div>
+              <div class="figure-delta" id="res-threshold">Ngưỡng đạt yêu cầu: ≥ 70%</div>
+            </div>
+            <div class="figure-card">
+              <div class="figure-label">Số câu trả lời đúng</div>
+              <div class="figure-value" id="res-score">0 / 0</div>
+              <div class="figure-delta" id="res-pct">0%</div>
+            </div>
+            <div class="figure-card">
+              <div class="figure-label">Thời gian làm bài</div>
+              <div class="figure-value" id="res-duration">00:00</div>
+              <div class="figure-delta">Tính đến thời điểm nộp bài</div>
+            </div>
+          </div>
+
+          <div class="controls-panel" style="margin-top: var(--space-md);">
+            <div class="figure-label">Tỷ lệ chính xác theo từng chuyên đề</div>
+            <div id="res-topic-breakdown"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exam History Table -->
+      <div style="margin-top: var(--space-xl);">
+        <div class="section-head">
+          <h2>Lịch sử các lượt thi thử</h2>
+          <button type="button" class="btn btn-danger" id="clear-history-btn" onclick="clearExamHistory(this)" style="font-size: 0.75rem;">Xóa lịch sử</button>
+        </div>
+        <div class="table-wrap" style="margin-top: var(--space-md);">
+          <table>
+            <thead>
+              <tr>
+                <th>Thời điểm nộp</th>
+                <th>Phạm vi chuyên đề</th>
+                <th class="num">Số câu đúng</th>
+                <th class="num">Tỷ lệ (%)</th>
+                <th class="num">Thời gian</th>
+                <th>Kết quả</th>
+              </tr>
+            </thead>
+            <tbody id="history-tbody">
+              <tr><td colspan="6" style="color: var(--on-surface-variant);">Chưa có lượt thi nào được ghi nhận. Hãy chọn phạm vi và bấm "Bắt đầu làm đề thi".</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODE 2: PRACTICE BY TOPIC -->
+    <section id="view-practice" class="hidden">
+      <div class="section-head">
+        <h2>Luyện tập Chuyên sâu theo Chuyên đề</h2>
+        <span class="section-meta">Chọn đáp án để xem ngay kết quả đúng/sai và phân tích điều khoản pháp luật tương ứng</span>
+      </div>
+
+      <div class="controls-panel" style="margin-top: var(--space-md);">
+        <div class="controls-row">
+          <div class="field-group">
+            <label class="field-label" for="practice-topic">Chuyên đề ôn luyện</label>
+            <select class="field-select" id="practice-topic" onchange="initPracticeList()">
+              <option value="all">Tất cả 7 chuyên đề</option>
+              <option value="Pháp luật chung">1. Pháp luật chung &amp; Phạm vi điều chỉnh</option>
+              <option value="Kế hoạch lựa chọn nhà thầu">2. Kế hoạch lựa chọn nhà thầu</option>
+              <option value="Quy trình lựa chọn nhà thầu qua mạng">3. Quy trình &amp; Đánh giá qua mạng / không qua mạng</option>
+              <option value="Hợp đồng">4. Hợp đồng &amp; Bảo đảm thực hiện</option>
+              <option value="Mua sắm trực tuyến/tập trung">5. Mua sắm trực tuyến, tập trung &amp; Điều ước quốc tế</option>
+              <option value="Giải quyết kiến nghị & xử lý tình huống">6. Kiến nghị, Giám sát &amp; Xử lý tình huống</option>
+              <option value="Lựa chọn nhà đầu tư">7. Lựa chọn nhà đầu tư</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="practice-filter-mode">Lọc trạng thái câu hỏi</label>
+            <select class="field-select" id="practice-filter-mode" onchange="initPracticeList()">
+              <option value="all">Tất cả câu hỏi trong chuyên đề</option>
+              <option value="unanswered">Chưa luyện tập</option>
+              <option value="wrong">Đã làm sai (cần ôn lại)</option>
+              <option value="flagged">Đang đánh dấu sao</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <button type="button" class="btn btn-secondary" onclick="resetPracticeProgress(this)">Đặt lại tiến độ luyện tập</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="workspace-split" style="margin-top: var(--space-md);">
+        <div id="practice-card-wrap">
+          <div class="question-card">
+            <div class="q-meta">
+              <span class="q-num" id="prac-q-num">Câu 1</span>
+              <div class="action-group">
+                <span class="stamp-tag" id="prac-q-topic">Chuyên đề</span>
+                <button type="button" class="btn btn-ghost" id="prac-flag-btn" onclick="togglePracticeFlag()" style="padding: 4px 12px; font-size: 0.75rem;">Đánh dấu</button>
+              </div>
+            </div>
+            <p class="q-text" id="prac-q-text"></p>
+            <div class="options-list" id="prac-options-list"></div>
+            <div class="explanation-box hidden" id="prac-explanation">
+              <div class="explanation-title">Phân tích đáp án &amp; Căn cứ pháp lý</div>
+              <div id="prac-explanation-body"></div>
+              <div class="legal-cite" id="prac-legal-cite"></div>
+            </div>
+            <div class="nav-actions">
+              <div class="action-group">
+                <button type="button" class="btn btn-secondary" onclick="movePractice(-1)">Câu trước</button>
+                <button type="button" class="btn btn-primary" onclick="movePractice(1)">Câu tiếp theo</button>
+              </div>
+              <span id="prac-counter-meta" style="font-size: 0.875rem; color: var(--on-surface-variant);"></span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="side-panel">
+          <div class="figure-label">Danh mục câu hỏi chuyên đề</div>
+          <div class="palette-grid" id="prac-palette"></div>
+          <div style="font-size: 0.75rem; color: var(--on-surface-variant); border-top: var(--hairline); padding-top: var(--space-sm);">
+            Xanh lá: đã trả lời đúng · Đỏ: trả lời sai · Góc vàng đồng: đánh dấu.
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- MODE 3: LOOKUP & LEGAL BANK -->
+    <section id="view-lookup" class="hidden">
+      <div class="section-head">
+        <h2>Tra cứu Toàn bộ Ngân hàng &amp; Hệ thống Văn bản Pháp luật</h2>
+        <span class="section-meta">Tìm kiếm nhanh theo từ khóa, số hiệu văn bản, điều khoản hoặc mã số câu hỏi</span>
+      </div>
+
+      <div class="controls-panel" style="margin-top: var(--space-md);">
+        <div class="controls-row">
+          <div class="field-group">
+            <label class="field-label" for="lookup-search">Từ khóa tìm kiếm (Nội dung / Luật / Điều khoản)</label>
+            <input type="text" class="field-input" id="lookup-search" placeholder="Ví dụ: Điều 42, 214/2025, 22/2024, chào hàng cạnh tranh, mã HS..." oninput="renderLookup()">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="lookup-topic">Lọc theo chuyên đề</label>
+            <select class="field-select" id="lookup-topic" onchange="renderLookup()">
+              <option value="all">Tất cả 7 chuyên đề</option>
+              <option value="Pháp luật chung">1. Pháp luật chung &amp; Phạm vi điều chỉnh</option>
+              <option value="Kế hoạch lựa chọn nhà thầu">2. Kế hoạch lựa chọn nhà thầu</option>
+              <option value="Quy trình lựa chọn nhà thầu qua mạng">3. Quy trình &amp; Đánh giá qua mạng / không qua mạng</option>
+              <option value="Hợp đồng">4. Hợp đồng &amp; Bảo đảm thực hiện</option>
+              <option value="Mua sắm trực tuyến/tập trung">5. Mua sắm trực tuyến, tập trung &amp; Điều ước quốc tế</option>
+              <option value="Giải quyết kiến nghị & xử lý tình huống">6. Kiến nghị, Giám sát &amp; Xử lý tình huống</option>
+              <option value="Lựa chọn nhà đầu tư">7. Lựa chọn nhà đầu tư</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="lookup-source">Văn bản pháp lý dẫn chiếu</label>
+            <select class="field-select" id="lookup-source" onchange="renderLookup()">
+              <option value="all">Tất cả văn bản quy phạm</option>
+              <option value="Luật Đấu thầu">Luật Đấu thầu 22/2023/QH15 &amp; Luật 57/2024, 90/2025</option>
+              <option value="Nghị định">Nghị định 214/2025/NĐ-CP &amp; 24/2024/NĐ-CP</option>
+              <option value="Thông tư 22/2024">Thông tư 22/2024/TT-BKHĐT</option>
+              <option value="Thông tư">Thông tư 79/2025/TT-BTC, 06/2021/TT-BXD, 21/2022</option>
+              <option value="Hiệp định">Hiệp định EVFTA, CPTPP, UKVFTA</option>
+            </select>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-sm);">
+          <span id="lookup-count-label" style="font-size: 0.875rem; color: var(--on-surface-variant);"></span>
+          <button type="button" class="btn btn-secondary" onclick="exportBankCsv()">Xuất danh sách đang lọc (.csv)</button>
+        </div>
+      </div>
+
+      <div class="bank-list" id="lookup-results" style="margin-top: var(--space-md);"></div>
+    </section>
+  </main>
+
+  <footer class="source-footer">
+    Nguồn dữ liệu biên soạn từ tài liệu học liệu trong hồ sơ: Ngân hàng câu hỏi thi nghiệp vụ chuyên môn về đấu thầu (kèm Thông báo số 2775/TB-QLĐT ngày 22/10/2026); Luật Đấu thầu số 22/2023/QH15 (sửa đổi, bổ sung theo Luật số 57/2024/QH15 và Luật số 90/2025/QH15); Nghị định số 214/2025/NĐ-CP và Nghị định số 24/2024/NĐ-CP; Thông tư số 22/2024/TT-BKHĐT; Thông tư số 79/2025/TT-BTC; Thông tư số 06/2021/TT-BXD; Thông tư số 21/2022/TT-BKHĐT.
+  </footer>
+
+  <api-shim></api-shim>
+  <script>
+    const TOPICS = [
+      `Pháp luật chung`,
+      `Kế hoạch lựa chọn nhà thầu`,
+      `Quy trình lựa chọn nhà thầu qua mạng`,
+      `Hợp đồng`,
+      `Mua sắm trực tuyến/tập trung`,
+      `Giải quyết kiến nghị & xử lý tình huống`,
+      `Lựa chọn nhà đầu tư`
+    ];
+
+    const QUESTION_BANK = [
+      // === 1. PHÁP LUẬT CHUNG ===
+      {
+        id: 1,
+        bankNo: `Câu 1`,
+        topic: `Pháp luật chung`,
+        question: `Trường hợp nào sau đây bắt buộc phải lựa chọn nhà thầu theo quy định tại Luật Đấu thầu?`,
+        options: [
+          `A. Gói thầu thuộc dự án sử dụng vốn ngân sách nhà nước của cơ quan nhà nước`,
+          `B. Lựa chọn nhà thầu của doanh nghiệp nhà nước không sử dụng vốn ngân sách nhà nước`,
+          `C. Lựa chọn nhà thầu của đơn vị sự nghiệp công lập tự bảo đảm chi thường xuyên không sử dụng ngân sách nhà nước`,
+          `D. Việc thuê, mua, thuê mua nhà, trụ sở, tài sản gắn liền với đất`
+        ],
+        answer: 0,
+        explanation: `Gói thầu thuộc dự án sử dụng vốn ngân sách nhà nước của cơ quan nhà nước thuộc phạm vi bắt buộc áp dụng Luật Đấu thầu. Các trường hợp còn lại (DNNN/ĐVSNCL tự chủ không dùng NSNN hoặc thuê/mua tài sản gắn liền với đất) thuộc diện được tự quyết định hoặc không áp dụng Luật Đấu thầu theo quy định sửa đổi.`,
+        legal: `Luật Đấu thầu số 22/2023/QH15 (Điều 2 — Đối tượng áp dụng, sửa đổi bởi Luật 57/2024/QH15 và Luật 90/2025/QH15)`
+      },
+      {
+        id: 2,
+        bankNo: `Câu 2`,
+        topic: `Pháp luật chung`,
+        question: `Chọn phương án đúng về phạm vi điều chỉnh của Luật Đấu thầu?`,
+        options: [
+          `A. Quy định về quản lý nhà nước đối với hoạt động đấu thầu`,
+          `B. Quy định về thẩm quyền và trách nhiệm của các cơ quan, tổ chức, cá nhân trong hoạt động đấu thầu`,
+          `C. Quy định về hoạt động lựa chọn nhà thầu thực hiện gói thầu, hoạt động lựa chọn nhà đầu tư thực hiện dự án đầu tư kinh doanh`,
+          `D. Tất cả phương án trên đều đúng`
+        ],
+        answer: 3,
+        explanation: `Luật Đấu thầu quy định đồng bộ cả 3 nội dung: quản lý nhà nước về đấu thầu; thẩm quyền, trách nhiệm của các chủ thể; và quy trình lựa chọn nhà thầu thực hiện gói thầu, lựa chọn nhà đầu tư thực hiện dự án đầu tư kinh doanh.`,
+        legal: `Điều 1 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 3,
+        bankNo: `Câu 3`,
+        topic: `Pháp luật chung`,
+        question: `Trường hợp nào sau đây không thuộc đối tượng áp dụng của Luật Đấu thầu?`,
+        options: [
+          `A. Gói thầu mua thuốc, hóa chất, vật tư xét nghiệm sử dụng nguồn ngân sách nhà nước của bệnh viện công lập A`,
+          `B. Gói thầu xây dựng đường giao thông sử dụng vốn đầu tư công do Ban Quản lý dự án đầu tư xây dựng công trình tỉnh A làm chủ đầu tư`,
+          `C. Gói thầu mua sắm trang thiết bị làm việc sử dụng vốn nhà nước của Văn phòng UBND tỉnh A`,
+          `D. Hoạt động mua phần mềm kế toán của hộ kinh doanh`
+        ],
+        answer: 3,
+        explanation: `Hoạt động mua sắm bằng vốn tư nhân của hộ kinh doanh không sử dụng ngân sách nhà nước hay vốn đầu tư công nên không thuộc đối tượng điều chỉnh bắt buộc của Luật Đấu thầu.`,
+        legal: `Điều 2 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 4,
+        bankNo: `Câu 4`,
+        topic: `Pháp luật chung`,
+        question: `Theo quy định pháp luật về đấu thầu, gói thầu nào là gói thầu cung cấp dịch vụ tư vấn?`,
+        options: [
+          `A. Thiết kế và cung cấp hệ thống xử lý nước thải`,
+          `B. Gói thầu lập nhiệm vụ quy hoạch vùng`,
+          `C. Gói thầu quảng cáo trên nền tảng xã hội và phát sóng trên VTV`,
+          `D. Gói thầu mua phần mềm kế toán MISA`
+        ],
+        answer: 1,
+        explanation: `Lập nhiệm vụ quy hoạch vùng là hoạt động đòi hỏi kiến thức chuyên môn trí tuệ để lập báo cáo/quy hoạch (dịch vụ tư vấn). Thiết kế và cung cấp là gói thầu EP/hỗn hợp; quảng cáo phát sóng là dịch vụ phi tư vấn; mua phần mềm thương mại là mua sắm hàng hóa.`,
+        legal: `Khoản 8 Điều 4 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 5,
+        bankNo: `Câu 5`,
+        topic: `Pháp luật chung`,
+        question: `Theo quy định pháp luật về đấu thầu, gói thầu nào là gói thầu cung cấp dịch vụ phi tư vấn?`,
+        options: [
+          `A. Gói thầu in sổ công tác của tỉnh A`,
+          `B. Gói thầu thuê kiểm toán dự án`,
+          `C. Gói thầu mua phần mềm kế toán hỗ trợ doanh nghiệp khởi nghiệp sáng tạo`,
+          `D. Gói thầu xây dựng trụ sở làm việc của tỉnh A`
+        ],
+        answer: 0,
+        explanation: `In ấn sổ công tác là dịch vụ phi tư vấn (hậu cần, đo đạc, in ấn, vệ sinh, vận chuyển...). Thuê kiểm toán là dịch vụ tư vấn; mua phần mềm là hàng hóa; xây dựng trụ sở là xây lắp.`,
+        legal: `Khoản 9 Điều 4 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 6,
+        bankNo: `Câu 6`,
+        topic: `Pháp luật chung`,
+        question: `Theo quy định pháp luật về đấu thầu, đấu thầu là gì?`,
+        options: [
+          `A. Là quá trình lựa chọn nhà thầu để ký kết, thực hiện hợp đồng cung cấp dịch vụ tư vấn, phi tư vấn, mua sắm hàng hóa, xây lắp trên cơ sở bảo đảm cạnh tranh, công bằng, minh bạch, hiệu quả kinh tế và trách nhiệm giải trình`,
+          `B. Là quá trình lựa chọn nhà đầu tư để ký kết, thực hiện hợp đồng dự án đầu tư kinh doanh trên cơ sở bảo đảm cạnh tranh, công bằng, minh bạch, hiệu quả kinh tế và trách nhiệm giải trình`,
+          `C. Là quá trình lựa chọn đơn vị để thực hiện hợp đồng thông qua các quy trình, thủ tục do pháp luật đấu thầu quy định`,
+          `D. Phương án A và B đều đúng`
+        ],
+        answer: 3,
+        explanation: `Khái niệm đấu thầu tại Luật Đấu thầu bao trùm cả hai hoạt động: lựa chọn nhà thầu (phương án A) và lựa chọn nhà đầu tư (phương án B) trên 5 nguyên tắc cốt lõi: cạnh tranh, công bằng, minh bạch, hiệu quả kinh tế và trách nhiệm giải trình.`,
+        legal: `Khoản 13 Điều 4 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 7,
+        bankNo: `Câu 7`,
+        topic: `Pháp luật chung`,
+        question: `Đấu thầu quốc tế là gì?`,
+        options: [
+          `A. Là hoạt động đấu thầu mà nhà thầu trong nước, nhà thầu nước ngoài được tham dự thầu`,
+          `B. Là hoạt động đấu thầu mà nhà thầu trong nước, nhà thầu nước ngoài được tham dự thầu, trong đó nhà thầu trong nước bắt buộc phải liên danh với nhà thầu nước ngoài`,
+          `C. Là hoạt động đấu thầu chỉ nhà thầu quốc tế được phép tham dự thầu`,
+          `D. Là hoạt động đấu thầu chỉ nhà thầu trong nước được phép tham dự thầu`
+        ],
+        answer: 0,
+        explanation: `Đấu thầu quốc tế cho phép cả nhà thầu trong nước và nhà thầu nước ngoài tham dự thầu (không bắt buộc nhà thầu trong nước phải liên danh với nhà thầu nước ngoài; ngược lại nhà thầu nước ngoài khi tham dự đấu thầu quốc tế tại Việt Nam có thể phải liên danh hoặc sử dụng nhà thầu phụ Việt Nam theo điều kiện quy định).`,
+        legal: `Khoản 10 Điều 4 và Điều 11 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 8,
+        bankNo: `Câu 8`,
+        topic: `Pháp luật chung`,
+        question: `Giá đề nghị trúng thầu là gì?`,
+        options: [
+          `A. Là giá dự thầu của nhà thầu ghi trong quyết định phê duyệt kết quả lựa chọn nhà thầu`,
+          `B. Là giá dự thầu của nhà thầu được đề nghị trúng thầu sau khi đã được sửa lỗi, hiệu chỉnh sai lệch theo yêu cầu của hồ sơ mời thầu, hồ sơ yêu cầu, trừ đi giá trị giảm giá (nếu có)`,
+          `C. Là giá dự thầu của nhà thầu chưa tính sửa lỗi, hiệu chỉnh sai lệch và giá trị giảm giá (nếu có)`,
+          `D. Là giá trị ghi trong hợp đồng giữa chủ đầu tư và nhà thầu`
+        ],
+        answer: 1,
+        explanation: `Giá đề nghị trúng thầu được xác định sau bước đánh giá tài chính: lấy giá dự thầu cộng/trừ sửa lỗi số học, hiệu chỉnh sai lệch (nếu có) và trừ đi giá trị giảm giá theo thư giảm giá hợp lệ.`,
+        legal: `Khoản 16 Điều 4 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 9,
+        bankNo: `Câu 330`,
+        topic: `Pháp luật chung`,
+        question: `Thời gian có hiệu lực thi hành của Luật số 90/2025/QH15 (sửa đổi, bổ sung một số điều của Luật Đấu thầu)?`,
+        options: [
+          `A. Từ ngày 01 tháng 7 năm 2025`,
+          `B. Từ ngày 04 tháng 8 năm 2025`,
+          `C. Từ ngày 08 tháng 8 năm 2025`,
+          `D. Tất cả các đáp án trên đều sai`
+        ],
+        answer: 0,
+        explanation: `Theo điều khoản chuyển tiếp tại Nghị định 214/2025/NĐ-CP, các quy định của Luật số 90/2025/QH15 (sửa đổi Luật Đấu thầu 22/2023/QH15 và Luật 57/2024/QH15) có hiệu lực thi hành từ ngày 01/7/2025.`,
+        legal: `Nghị định số 214/2025/NĐ-CP (Điều khoản chuyển tiếp từ ngày 01/7/2025)`
+      },
+      {
+        id: 10,
+        bankNo: `Câu 368`,
+        topic: `Pháp luật chung`,
+        question: `Doanh nghiệp nhà nước A thực hiện dự án đầu tư có tổng mức đầu tư 1.000 tỷ đồng, trong đó vốn từ ngân sách nhà nước là 100 tỷ đồng, vốn tự có của doanh nghiệp là 900 tỷ đồng. Việc lựa chọn nhà thầu của dự án này có phải tuân thủ Luật Đấu thầu?`,
+        options: [
+          `A. Không phải thực hiện theo quy định của Luật Đấu thầu vì vốn ngân sách nhà nước thấp hơn 30% tổng mức đầu tư`,
+          `B. Doanh nghiệp nhà nước A được tự quyết định việc lựa chọn nhà thầu trên cơ sở bảo đảm công bằng, minh bạch, hiệu quả và trách nhiệm giải trình`,
+          `C. Bắt buộc phải thực hiện theo Luật Đấu thầu`,
+          `D. Phương án A và B đều đúng`
+        ],
+        answer: 2,
+        explanation: `Dự án đầu tư có sử dụng vốn ngân sách nhà nước (dù tỷ trọng 100/1.000 tỷ) của doanh nghiệp nhà nước vẫn thuộc phạm vi điều chỉnh bắt buộc của Luật Đấu thầu (khác với trường hợp doanh nghiệp nhà nước hoàn toàn không sử dụng vốn ngân sách nhà nước theo quy định mới).`,
+        legal: `Điều 2 Luật Đấu thầu số 22/2023/QH15 (sửa đổi bởi Luật 90/2025/QH15)`
+      },
+      {
+        id: 11,
+        bankNo: `Câu 44`,
+        topic: `Pháp luật chung`,
+        question: `Bảo đảm cạnh tranh trong đấu thầu thuộc nội dung đánh giá về?`,
+        options: [
+          `A. Tư cách hợp lệ`,
+          `B. Năng lực, kinh nghiệm`,
+          `C. Kỹ thuật`,
+          `D. Tài chính`
+        ],
+        answer: 0,
+        explanation: `Theo mẫu E-HSMT (Mục 5 E-CDNT Thông tư 22/2024/TT-BKHĐT), bảo đảm cạnh tranh trong đấu thầu là một trong các điều kiện đánh giá tư cách hợp lệ của nhà thầu.`,
+        legal: `Mục 5.1 E-CDNT Thông tư 22/2024/TT-BKHĐT; Điều 5 và Điều 6 Luật Đấu thầu 2023`
+      },
+      {
+        id: 12,
+        bankNo: `Câu 46`,
+        topic: `Pháp luật chung`,
+        question: `Nhận định nào sau đây KHÔNG phù hợp với quy định về bảo đảm cạnh tranh trong đấu thầu?`,
+        options: [
+          `A. Nhà thầu tham dự thầu phải độc lập với chủ đầu tư, trừ trường hợp đơn vị sự nghiệp công lập hoặc công ty trong tập đoàn theo quy định`,
+          `B. Nhà thầu tham dự thầu gói thầu xây lắp phải độc lập với nhà thầu cung cấp dịch vụ tư vấn cho gói thầu đó (lập, thẩm tra thiết kế kỹ thuật, bản vẽ thi công, dự toán...)`,
+          `C. Nhà thầu tham dự thầu gói thầu dịch vụ tư vấn phải độc lập với nhà thầu cung cấp dịch vụ tư vấn cho gói thầu đó (lập, thẩm định E-HSMT; đánh giá E-HSDT...)`,
+          `D. Nhà thầu thực hiện hợp đồng phải độc lập với nhà thầu tư vấn lập kế hoạch lựa chọn nhà thầu`
+        ],
+        answer: 3,
+        explanation: `Pháp luật đấu thầu không quy định nhà thầu thực hiện hợp đồng phải độc lập với nhà thầu tư vấn lập kế hoạch lựa chọn nhà thầu hoặc kế hoạch tổng thể lựa chọn nhà thầu; sự độc lập áp dụng đối với tư vấn lập/thẩm tra thiết kế, dự toán, lập/thẩm định E-HSMT, đánh giá E-HSDT, thẩm định kết quả và tư vấn giám sát.`,
+        legal: `Điều 6 Luật Đấu thầu số 22/2023/QH15; Nghị định 214/2025/NĐ-CP`
+      },
+      {
+        id: 13,
+        bankNo: `Câu 153`,
+        topic: `Pháp luật chung`,
+        question: `Thời hiệu áp dụng biện pháp cấm tham gia hoạt động đấu thầu là bao lâu?`,
+        options: [
+          `A. 10 năm tính từ ngày xảy ra hành vi vi phạm`,
+          `B. 10 năm tính từ ngày phát hiện ra hành vi vi phạm`,
+          `C. 05 năm tính từ ngày phát hiện ra hành vi vi phạm`,
+          `D. 05 năm tính từ ngày xảy ra hành vi vi phạm`
+        ],
+        answer: 0,
+        explanation: `Thời hiệu áp dụng biện pháp cấm tham gia hoạt động đấu thầu là 10 năm tính từ ngày xảy ra hành vi vi phạm pháp luật về đấu thầu.`,
+        legal: `Điều 87 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 14,
+        bankNo: `Câu 154`,
+        topic: `Pháp luật chung`,
+        question: `Chủ thể nào KHÔNG có quyền cấm tham gia hoạt động đấu thầu?`,
+        options: [
+          `A. Người có thẩm quyền`,
+          `B. Chủ đầu tư`,
+          `C. Bộ trưởng, Thủ trưởng cơ quan ngang Bộ, cơ quan thuộc Chính phủ, cơ quan khác ở Trung ương`,
+          `D. Chủ tịch Ủy ban nhân dân cấp tỉnh`
+        ],
+        answer: 1,
+        explanation: `Chủ đầu tư không có thẩm quyền ra quyết định cấm tham gia hoạt động đấu thầu. Thẩm quyền này thuộc về Người có thẩm quyền, Bộ trưởng/Thủ trưởng cơ quan Trung ương và Chủ tịch UBND cấp tỉnh.`,
+        legal: `Khoản 3 Điều 87 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 15,
+        bankNo: `Câu 06/2021-BXD`,
+        topic: `Pháp luật chung`,
+        question: `Theo Thông tư 06/2021/TT-BXD về phân cấp công trình xây dựng, khi một công trình có nhiều tiêu chí xác định cấp (như quy mô công suất, quy mô kết cấu), cấp công trình được xác định như thế nào?`,
+        options: [
+          `A. Lấy cấp thấp nhất trong các tiêu chí đánh giá`,
+          `B. Lấy trung bình cộng của các cấp theo quy mô công suất và kết cấu`,
+          `C. Xác định theo cấp cao nhất của công trình xác định được theo các tiêu chí quy định tại Phụ lục I và Phụ lục II`,
+          `D. Do nhà thầu thi công tự đề xuất trong E-HSDT`
+        ],
+        answer: 2,
+        explanation: `Theo Điều 2 Thông tư 06/2021/TT-BXD (minh họa ví dụ công trình thể thao cấp III và tập trung đông người cấp II), cấp của công trình được xác định theo cấp cao nhất đạt được theo quy mô công suất, loại công trình hoặc quy mô kết cấu.`,
+        legal: `Điều 2 Thông tư số 06/2021/TT-BXD ngày 30/6/2021 của Bộ Xây dựng`
+      },
+
+      // === 2. KẾ HOẠCH LỰA CHỌN NHÀ THẦU ===
+      {
+        id: 16,
+        bankNo: `Câu 39`,
+        topic: `Kế hoạch lựa chọn nhà thầu`,
+        question: `Kế hoạch lựa chọn nhà thầu của dự án thuộc đối tượng áp dụng của Luật Đấu thầu bắt buộc phải đăng tải ở đâu?`,
+        options: [
+          `A. Hệ thống mạng đấu thầu quốc gia`,
+          `B. Báo Tài chính - Đầu tư`,
+          `C. Cổng Thông tin điện tử của Bộ, ngành`,
+          `D. Phương án A và B đều đúng`
+        ],
+        answer: 0,
+        explanation: `Kế hoạch tổng thể lựa chọn nhà thầu và kế hoạch lựa chọn nhà thầu bắt buộc phải đăng tải công khai trên Hệ thống mạng đấu thầu quốc gia.`,
+        legal: `Điều 7 và Điều 8 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 17,
+        bankNo: `Câu 40`,
+        topic: `Kế hoạch lựa chọn nhà thầu`,
+        question: `Chậm nhất là bao nhiêu ngày thì kế hoạch lựa chọn nhà thầu phải được đăng tải trên Hệ thống mạng đấu thầu quốc gia?`,
+        options: [
+          `A. 05 ngày làm việc kể từ ngày kế hoạch lựa chọn nhà thầu được ban hành`,
+          `B. 07 ngày kể từ ngày kế hoạch lựa chọn nhà thầu được ban hành`,
+          `C. 07 ngày làm việc kể từ ngày kế hoạch lựa chọn nhà thầu được ban hành`,
+          `D. 10 ngày kể từ ngày kế hoạch lựa chọn nhà thầu được ban hành`
+        ],
+        answer: 0,
+        explanation: `Theo quy định cung cấp thông tin về đấu thầu, kế hoạch lựa chọn nhà thầu phải được đăng tải trên Hệ thống mạng đấu thầu quốc gia chậm nhất là 05 ngày làm việc kể từ ngày văn bản được ban hành.`,
+        legal: `Khoản 4 Điều 8 Luật Đấu thầu số 22/2023/QH15; Thông tư 22/2024/TT-BKHĐT`
+      },
+      {
+        id: 18,
+        bankNo: `Câu 41`,
+        topic: `Kế hoạch lựa chọn nhà thầu`,
+        question: `Kế hoạch lựa chọn nhà thầu bao gồm nội dung nào sau đây?`,
+        options: [
+          `A. Giá gói thầu`,
+          `B. Thời gian thực hiện hợp đồng (hoặc gói thầu)`,
+          `C. Giám sát hoạt động đấu thầu (nếu có)`,
+          `D. Tất cả phương án trên đều đúng`
+        ],
+        answer: 3,
+        explanation: `Theo Điều 39 Luật Đấu thầu và mẫu Tờ trình kế hoạch lựa chọn nhà thầu trong Thông tư 22/2024/TT-BKHĐT, nội dung của kế hoạch gồm: tên gói thầu, giá gói thầu, nguồn vốn, hình thức/phương thức LCNT, thời gian tổ chức LCNT, thời gian bắt đầu tổ chức LCNT, loại hợp đồng, thời gian thực hiện gói thầu, tùy chọn mua thêm (nếu có) và giám sát hoạt động đấu thầu.`,
+        legal: `Điều 39 Luật Đấu thầu số 22/2023/QH15; Thông tư 22/2024/TT-BKHĐT`
+      },
+      {
+        id: 19,
+        bankNo: `Câu 42`,
+        topic: `Kế hoạch lựa chọn nhà thầu`,
+        question: `Lựa chọn phương án phù hợp nhất đối với nội dung đền bù giải phóng mặt bằng trong kế hoạch lựa chọn nhà thầu:`,
+        options: [
+          `A. Tất cả nội dung công việc có liên quan đến giải phóng mặt bằng thuộc phần công việc không áp dụng một trong các hình thức lựa chọn nhà thầu`,
+          `B. Bắt buộc đưa toàn bộ vào một gói thầu đấu thầu rộng rãi`,
+          `C. Thuộc phần công việc đã thực hiện trước khi phê duyệt dự án`,
+          `D. Phải áp dụng chỉ định thầu cho tất cả các hạng mục giải phóng mặt bằng`
+        ],
+        answer: 0,
+        explanation: `Trong cơ cấu phân chia phần công việc của kế hoạch lựa chọn nhà thầu, chi phí đền bù, giải phóng mặt bằng thuộc phần công việc không áp dụng một trong các hình thức lựa chọn nhà thầu.`,
+        legal: `Điều 37 và Điều 39 Luật Đấu thầu số 22/2023/QH15; Thông tư 22/2024/TT-BKHĐT`
+      },
+      {
+        id: 20,
+        bankNo: `Câu 401`,
+        topic: `Kế hoạch lựa chọn nhà thầu`,
+        question: `Đối với gói thầu mua sắm hàng hóa thông dụng, sẵn có trên thị trường có giá gói thầu 07 tỷ đồng thì kế hoạch lựa chọn nhà thầu phê duyệt áp dụng hình thức lựa chọn nhà thầu nào sau đây?`,
+        options: [
+          `A. Chỉ được áp dụng hình thức chào hàng cạnh tranh`,
+          `B. Được áp dụng hình thức chào hàng cạnh tranh hoặc đấu thầu rộng rãi`,
+          `C. Bắt buộc áp dụng hình thức chỉ định thầu`,
+          `D. Được áp dụng hình thức chỉ định thầu hoặc chào hàng cạnh tranh hoặc đấu thầu rộng rãi`
+        ],
+        answer: 1,
+        explanation: `Hàng hóa thông dụng, sẵn có trên thị trường có giá gói thầu 07 tỷ đồng (không quá 10 tỷ đồng) thuộc trường hợp được áp dụng chào hàng cạnh tranh hoặc đấu thầu rộng rãi (không thuộc hạn mức chỉ định thầu thông thường đối với mua sắm hàng hóa).`,
+        legal: `Điều 24 Luật Đấu thầu số 22/2023/QH15; Nghị định 214/2025/NĐ-CP`
+      },
+      {
+        id: 21,
+        bankNo: `Câu 403`,
+        topic: `Kế hoạch lựa chọn nhà thầu`,
+        question: `Đối với nội dung mua sắm hàng hóa có giá không quá 100 triệu đồng thì được thực hiện như thế nào?`,
+        options: [
+          `A. Không phải lập kế hoạch lựa chọn nhà thầu nhưng phải thực hiện mua sắm trên cơ sở tiết kiệm, hiệu quả, bảo đảm đầy đủ hóa đơn, chứng từ`,
+          `B. Không phải lập kế hoạch lựa chọn nhà thầu và không cần hóa đơn, chứng từ`,
+          `C. Được hình thành gói thầu để thực hiện lựa chọn nhà thầu theo một trong các hình thức lựa chọn nhà thầu nhưng phải lập kế hoạch lựa chọn nhà thầu`,
+          `D. Phương án A và C đều đúng`
+        ],
+        answer: 3,
+        explanation: `Nội dung mua sắm có giá không quá hạn mức quy định (không quá 100 triệu đồng hoặc theo ngưỡng dự toán mua sắm hiện hành) có thể thực hiện mua sắm trực tiếp bảo đảm hóa đơn chứng từ mà không cần lập KHLCNT, hoặc vẫn có thể gộp/hình thành gói thầu trong KHLCNT nếu chủ đầu tư thấy cần thiết.`,
+        legal: `Điều 23 và Điều 37 Luật Đấu thầu số 22/2023/QH15; Nghị định 214/2025/NĐ-CP`
+      },
+      {
+        id: 22,
+        bankNo: `Câu 375`,
+        topic: `Kế hoạch lựa chọn nhà thầu`,
+        question: `Một trong các nguyên tắc lập kế hoạch lựa chọn nhà thầu là gì?`,
+        options: [
+          `A. Không ghi rõ số lượng gói thầu`,
+          `B. Không được chia nhỏ gói thầu hoặc chia dự án thành các gói thầu trái quy định để chỉ định thầu hoặc hạn chế số lượng nhà thầu tham gia`,
+          `C. Phải ghi toàn bộ phương thức lựa chọn nhà thầu là đấu thầu qua mạng`,
+          `D. Ghi thời gian bắt đầu tổ chức lựa chọn nhà thầu là ngày cụ thể trong năm`
+        ],
+        answer: 1,
+        explanation: `Thông tư 22/2024/TT-BKHĐT nhấn mạnh: việc chia dự án, dự toán mua sắm thành các gói thầu trái với quy định để thực hiện chỉ định thầu hoặc tạo cơ hội cho số ít nhà thầu tham gia là không phù hợp với quy định của pháp luật về đấu thầu.`,
+        legal: `Điều 37 Luật Đấu thầu 2023; Mẫu Tờ trình KHLCNT Thông tư 22/2024/TT-BKHĐT`
+      },
+      {
+        id: 23,
+        bankNo: `Câu 56`,
+        topic: `Kế hoạch lựa chọn nhà thầu`,
+        question: `Một trong các căn cứ lập hồ sơ mời thầu là?`,
+        options: [
+          `A. Báo giá của nhà thầu`,
+          `B. Quyết định mua sắm được phê duyệt`,
+          `C. Kế hoạch lựa chọn nhà thầu được duyệt`,
+          `D. Phương án B và C đều đúng`
+        ],
+        answer: 3,
+        explanation: `Căn cứ lập hồ sơ mời thầu bao gồm quyết định phê duyệt dự án/mua sắm và kế hoạch lựa chọn nhà thầu được duyệt cùng các quy định pháp luật về đấu thầu, thuế, ưu đãi và điều ước quốc tế (nếu có).`,
+        legal: `Nghị định số 214/2025/NĐ-CP (Căn cứ lập E-HSMT/HSMT); Điều 44 Luật Đấu thầu 2023`
+      },
+
+      // === 3. QUY TRÌNH LỰA CHỌN NHÀ THẦU QUA MẠNG ===
+      {
+        id: 24,
+        bankNo: `Câu 247`,
+        topic: `Quy trình lựa chọn nhà thầu qua mạng`,
+        question: `Nhận định nào sau đây về văn bản điện tử trên Hệ thống mạng đấu thầu quốc gia là đúng?`,
+        options: [
+          `A. Văn bản điện tử trên Hệ thống có giá trị pháp lý theo quy định giao dịch điện tử, làm cơ sở đối chiếu, xác thực phục vụ đánh giá, thẩm định, thanh tra, kiểm tra, kiểm toán và giải ngân`,
+          `B. Thời điểm gửi, nhận văn bản điện tử được xác định căn cứ theo thời gian thực ghi lại trên Hệ thống`,
+          `C. Khi gửi hồ sơ thanh quyết toán đến Kho bạc Nhà nước, nhà thầu không phải cung cấp thông tin, tài liệu đối với các văn bản điện tử đã có trên Hệ thống`,
+          `D. Các phương án trên đều đúng`
+        ],
+        answer: 3,
+        explanation: `Hệ thống mạng đấu thầu quốc gia ghi nhận thời gian thực và đảm bảo giá trị pháp lý của văn bản điện tử để phục vụ công tác thanh tra, kiểm toán và liên thông giải ngân với Kho bạc Nhà nước.`,
+        legal: `Thông tư số 22/2024/TT-BKHĐT; Thông tư số 79/2025/TT-BTC`
+      },
+      {
+        id: 25,
+        bankNo: `Câu 231`,
+        topic: `Quy trình lựa chọn nhà thầu qua mạng`,
+        question: `Đối với đấu thầu rộng rãi qua mạng, những nội dung nào do Hệ thống mạng đấu thầu quốc gia đánh giá "không đạt" mà Tổ chuyên gia KHÔNG thể sửa đổi từ "không đạt" thành "đạt"?`,
+        options: [
+          `A. Tư cách hợp lệ; nhà thầu không có nhân sự bị tòa án kết án vi phạm đấu thầu; trạng thái bị tạm ngừng/chấm dứt tham gia Hệ thống; doanh thu bình quân hằng năm`,
+          `B. Tư cách hợp lệ; bảo đảm dự thầu; kê khai thuế và nộp thuế; kết quả hoạt động tài chính; doanh thu bình quân hằng năm`,
+          `C. Tư cách hợp lệ; nhân sự bị tòa án kết án; trạng thái bị tạm ngừng/chấm dứt tham gia Hệ thống; thực hiện nghĩa vụ kê khai thuế và nộp thuế; kết quả hoạt động tài chính; doanh thu bình quân hằng năm`,
+          `D. Tư cách hợp lệ; nhân sự bị kết án; lịch sử không hoàn thành hợp đồng do lỗi nhà thầu; nghĩa vụ thuế; kết quả hoạt động tài chính; doanh thu bình quân hằng năm`
+        ],
+        answer: 3,
+        explanation: `Hệ thống tự động trích xuất và đánh giá các nội dung định lượng/dữ liệu hệ thống gồm: tư cách hợp lệ, lịch sử không hoàn thành hợp đồng do lỗi nhà thầu, nghĩa vụ kê khai/nộp thuế, kết quả hoạt động tài chính và doanh thu bình quân hằng năm từ dữ liệu thuế điện tử/đăng ký doanh nghiệp.`,
+        legal: `Mục 2 Chương III Mẫu E-HSMT (Thông tư 22/2024/TT-BKHĐT, số 1445 + 1446)`
+      },
+      {
+        id: 26,
+        bankNo: `Câu 233`,
+        topic: `Quy trình lựa chọn nhà thầu qua mạng`,
+        question: `Trong quá trình đánh giá, Tổ chuyên gia phát hiện nhà thầu tham dự thầu trên Hệ thống mạng đấu thầu quốc gia đính kèm tệp tin có thiết lập mật khẩu thì xử lý thế nào?`,
+        options: [
+          `A. Yêu cầu nhà thầu nộp lại tệp tin không có thiết lập mật khẩu trên Hệ thống`,
+          `B. Yêu cầu nhà thầu cung cấp mật khẩu để xem xét, đánh giá`,
+          `C. Tệp tin này không được xem xét, đánh giá`,
+          `D. Phương án A và B đều đúng`
+        ],
+        answer: 2,
+        explanation: `Theo quy định đấu thầu qua mạng, nhà thầu chịu trách nhiệm về tính toàn vẹn và khả năng đọc của tệp tin E-HSDT. Tệp tin bị lỗi không mở được hoặc có đặt mật khẩu bảo vệ sẽ không được xem xét, đánh giá.`,
+        legal: `Thông tư số 22/2024/TT-BKHĐT; Nghị định 214/2025/NĐ-CP`
+      },
+      {
+        id: 27,
+        bankNo: `Câu 196`,
+        topic: `Quy trình lựa chọn nhà thầu qua mạng`,
+        question: `Đối với gói thầu tổ chức lựa chọn nhà thầu qua mạng, trong quá trình đánh giá E-HSDT mà chưa có kết quả lựa chọn nhà thầu, nhà thầu có tên trong biên bản mở thầu bị khóa tài khoản theo quy định thì chủ đầu tư xử lý như thế nào?`,
+        options: [
+          `A. Yêu cầu nhà thầu thực hiện các thủ tục để mở khóa tài khoản làm cơ sở xem xét, đánh giá`,
+          `B. Tiếp tục xem xét, đánh giá E-HSDT của nhà thầu`,
+          `C. Không tiếp tục xem xét, đánh giá E-HSDT của nhà thầu`,
+          `D. Tiếp tục xem xét, đánh giá E-HSDT và yêu cầu nhà thầu mở khóa tài khoản trước khi phê duyệt kết quả lựa chọn nhà thầu`
+        ],
+        answer: 3,
+        explanation: `Chủ đầu tư vẫn tiếp tục đánh giá E-HSDT của nhà thầu đó; trường hợp nhà thầu được đề nghị trúng thầu thì yêu cầu nhà thầu hoàn thành thủ tục mở khóa tài khoản trước khi phê duyệt kết quả lựa chọn nhà thầu.`,
+        legal: `Quy định về xử lý tình huống và trạng thái tài khoản trên Hệ thống mạng đấu thầu quốc gia (Thông tư 22/2024/TT-BKHĐT & NĐ 214/2025/NĐ-CP)`
+      },
+      {
+        id: 28,
+        bankNo: `Câu 259`,
+        topic: `Quy trình lựa chọn nhà thầu qua mạng`,
+        question: `Đối với gói thầu mua sắm hàng hóa có giá gói thầu 15 tỷ đồng thực hiện đấu thầu rộng rãi qua mạng, trường hợp tại thời điểm đóng thầu không có nhà thầu tham dự thầu, chủ đầu tư quyết định gia hạn thời điểm đóng thầu thì thời gian gia hạn tối thiểu là bao nhiêu?`,
+        options: [
+          `A. 10 ngày`,
+          `B. 05 ngày làm việc`,
+          `C. 05 ngày`,
+          `D. 03 ngày làm việc`
+        ],
+        answer: 2,
+        explanation: `Gói thầu mua sắm hàng hóa có giá gói thầu 15 tỷ đồng (trên 10 tỷ đồng) khi gia hạn thời điểm đóng thầu do không có nhà thầu tham dự được áp dụng thời gian gia hạn tối thiểu theo quy định xử lý tình huống (05 ngày hoặc 10 ngày tùy ngưỡng giá gói thầu; với gói >10 tỷ hàng hóa là tối thiểu 05 ngày / 10 ngày theo từng trường hợp, lưu ý câu 407 áp dụng tối thiểu 05 ngày làm việc cho gói hàng hóa ≤ 10 tỷ đồng).`,
+        legal: `Nghị định số 214/2025/NĐ-CP (Xử lý tình huống khi đóng thầu không có nhà thầu)`
+      },
+      {
+        id: 29,
+        bankNo: `Câu 407`,
+        topic: `Quy trình lựa chọn nhà thầu qua mạng`,
+        question: `Đối với gói thầu tổ chức đấu thầu rộng rãi qua mạng, tại thời điểm đóng thầu không có nhà thầu nộp E-HSDT thì chủ đầu tư có thể quyết định theo phương án nào sau đây?`,
+        options: [
+          `A. Hủy E-TBMT để mời thầu lại`,
+          `B. Chuyển sang hình thức chỉ định thầu`,
+          `C. Gia hạn thời điểm đóng thầu tối thiểu 05 ngày làm việc đối với gói thầu xây lắp, hỗn hợp ≤ 20 tỷ đồng; hàng hóa, phi tư vấn ≤ 10 tỷ đồng`,
+          `D. Tất cả phương án trên đều đúng`
+        ],
+        answer: 0,
+        explanation: `Khi không có nhà thầu nộp E-HSDT tại thời điểm đóng thầu, chủ đầu tư có thể chọn gia hạn thời điểm đóng thầu hoặc hủy E-TBMT để mời thầu lại (tuy nhiên phải tuân thủ đúng thời gian gia hạn tối thiểu và điều kiện chuyển hình thức chỉ định thầu khi đáp ứng quy định; phương án hủy E-TBMT để mời thầu lại luôn là phương án hợp lệ nếu cần rà soát lại E-HSMT).`,
+        legal: `Điều 17 Luật Đấu thầu 2023; Nghị định 214/2025/NĐ-CP`
+      },
+      {
+        id: 30,
+        bankNo: `Câu 7.1-TT22`,
+        topic: `Quy trình lựa chọn nhà thầu qua mạng`,
+        question: `Theo Mẫu E-HSMT tại Thông tư 22/2024/TT-BKHĐT, việc sửa đổi E-HSMT đối với gói thầu có giá gói thầu không quá 20 tỷ đồng phải được thực hiện trong thời gian tối thiểu là bao lâu trước thời điểm đóng thầu?`,
+        options: [
+          `A. Tối thiểu 10 ngày trước ngày có thời điểm đóng thầu`,
+          `B. Tối thiểu 03 ngày làm việc trước ngày có thời điểm đóng thầu và bảo đảm đủ thời gian để nhà thầu hoàn chỉnh E-HSDT`,
+          `C. Tối thiểu 02 ngày làm việc trước ngày có thời điểm đóng thầu`,
+          `D. Tối thiểu 05 ngày trước ngày có thời điểm đóng thầu`
+        ],
+        answer: 1,
+        explanation: `Mục 7.1 E-CDNT quy định: việc sửa đổi E-HSMT thực hiện tối thiểu 10 ngày trước ngày đóng thầu; riêng đối với gói thầu có giá gói thầu không quá 20 tỷ đồng thì thực hiện tối thiểu 03 ngày làm việc trước ngày đóng thầu. Nếu không đủ thời gian thì phải gia hạn thời điểm đóng thầu.`,
+        legal: `Mục 7.1 E-CDNT Thông tư số 22/2024/TT-BKHĐT`
+      },
+      {
+        id: 31,
+        bankNo: `Câu 7.2-TT22`,
+        topic: `Quy trình lựa chọn nhà thầu qua mạng`,
+        question: `Khi cần làm rõ E-HSMT, nhà thầu phải gửi đề nghị làm rõ trên Hệ thống trong khoảng thời gian nào, và Bên mời thầu trả lời làm rõ chậm nhất khi nào?`,
+        options: [
+          `A. Nhà thầu gửi tối thiểu 05 ngày trước đóng thầu; Bên mời thầu làm rõ tối thiểu 03 ngày trước đóng thầu`,
+          `B. Nhà thầu gửi tối thiểu 03 ngày làm việc trước đóng thầu; Bên mời thầu thực hiện làm rõ tối thiểu 02 ngày làm việc trước ngày có thời điểm đóng thầu`,
+          `C. Nhà thầu gửi tối thiểu 02 ngày làm việc trước đóng thầu; Bên mời thầu trả lời trong vòng 24 giờ`,
+          `D. Nhà thầu gửi trước thời điểm mở thầu`
+        ],
+        answer: 1,
+        explanation: `Mục 7.2 E-CDNT quy định nhà thầu gửi yêu cầu làm rõ tối thiểu 03 ngày làm việc trước ngày có thời điểm đóng thầu; Bên mời thầu mô tả nội dung yêu cầu (không nêu tên nhà thầu) và đăng tải làm rõ trên Hệ thống tối thiểu 02 ngày làm việc trước ngày có thời điểm đóng thầu.`,
+        legal: `Mục 7.2 E-CDNT Thông tư số 22/2024/TT-BKHĐT`
+      },
+      {
+        id: 32,
+        bankNo: `Câu 272`,
+        topic: `Quy trình lựa chọn nhà thầu qua mạng`,
+        question: `Khi sử dụng phương pháp chấm điểm để xây dựng tiêu chuẩn đánh giá về kỹ thuật đối với gói thầu có yêu cầu kỹ thuật cao, mức điểm yêu cầu tối thiểu về kỹ thuật được quy định là bao nhiêu?`,
+        options: [
+          `A. Không thấp hơn 60% tổng số điểm tối đa về kỹ thuật`,
+          `B. Không thấp hơn 70% tổng số điểm tối đa về kỹ thuật`,
+          `C. Từ 80% đến 90% tổng số điểm tối đa về kỹ thuật`,
+          `D. Không thấp hơn 90% tổng số điểm tối đa về kỹ thuật`
+        ],
+        answer: 2,
+        explanation: `Thông tư 22/2024/TT-BKHĐT quy định mức điểm yêu cầu tối thiểu về kỹ thuật thông thường không thấp hơn 70% tổng số điểm kỹ thuật; riêng đối với gói thầu có yêu cầu kỹ thuật cao là từ 80% đến 90% tổng số điểm tối đa về kỹ thuật.`,
+        legal: `Mục 3 Chương III Mẫu E-HSMT (Thông tư số 22/2024/TT-BKHĐT, số 1435 + 1436)`
+      },
+      {
+        id: 33,
+        bankNo: `Câu 50`,
+        topic: `Quy trình lựa chọn nhà thầu qua mạng`,
+        question: `Đối với gói thầu mua sắm hàng hóa, xây lắp, dịch vụ phi tư vấn, phương pháp để đánh giá về năng lực và kinh nghiệm là gì?`,
+        options: [
+          `A. Sử dụng tiêu chí đạt, không đạt`,
+          `B. Sử dụng phương pháp chấm điểm`,
+          `C. Kết hợp cả hai phương pháp: tiêu chí đạt, không đạt và phương pháp chấm điểm`,
+          `D. Phương pháp dựa trên kỹ thuật`
+        ],
+        answer: 0,
+        explanation: `Đánh giá năng lực và kinh nghiệm đối với gói thầu mua sắm hàng hóa, xây lắp, phi tư vấn bắt buộc sử dụng tiêu chí đạt / không đạt.`,
+        legal: `Điều 58 Luật Đấu thầu 2023; Chương III Thông tư 22/2024/TT-BKHĐT`
+      },
+      {
+        id: 34,
+        bankNo: `Câu 57`,
+        topic: `Quy trình lựa chọn nhà thầu qua mạng`,
+        question: `Đối với gói thầu cung cấp dịch vụ tư vấn, phương pháp đánh giá nào KHÔNG được áp dụng?`,
+        options: [
+          `A. Giá thấp nhất`,
+          `B. Giá đánh giá`,
+          `C. Kết hợp giữa kỹ thuật và giá`,
+          `D. Giá cố định`
+        ],
+        answer: 1,
+        explanation: `Đối với gói thầu dịch vụ tư vấn áp dụng 4 phương pháp: Giá thấp nhất, Giá cố định, Kết hợp giữa kỹ thuật và giá, Dựa trên kỹ thuật. Phương pháp "Giá đánh giá" chỉ áp dụng cho mua sắm hàng hóa, xây lắp, phi tư vấn, hỗn hợp.`,
+        legal: `Điều 58 và Điều 59 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 35,
+        bankNo: `Câu 61`,
+        topic: `Quy trình lựa chọn nhà thầu qua mạng`,
+        question: `Đối với gói thầu mua sắm thiết bị áp dụng đấu thầu rộng rãi qua mạng, việc quy định xuất xứ hàng hóa trong E-HSMT được thực hiện như thế nào?`,
+        options: [
+          `A. Được nêu xuất xứ cụ thể của một quốc gia bất kỳ`,
+          `B. Được nêu xuất xứ theo nhóm nước, vùng lãnh thổ; nhà thầu phải chào theo nhóm nước yêu cầu hoặc xuất xứ Việt Nam`,
+          `C. Nghiêm cấm nêu bất kỳ thông tin nào về xuất xứ theo nhóm nước`,
+          `D. Chỉ được phép nêu xuất xứ từ các nước ASEAN`
+        ],
+        answer: 1,
+        explanation: `Theo khoản 2 Điều 44 Luật Đấu thầu và Thông tư 22/2024/TT-BKHĐT, Chủ đầu tư có thể yêu cầu xuất xứ theo nhóm nước, vùng lãnh thổ (EU, G7, OECD, ASEAN...). Nhà thầu phải chào đúng nhóm nước đó hoặc xuất xứ Việt Nam (kể cả khi nhóm nước yêu cầu không liệt kê Việt Nam).`,
+        legal: `Khoản 2 Điều 44 Luật Đấu thầu 2023; Thông tư 22/2024/TT-BKHĐT (số 1473 + 1474)`
+      },
+      {
+        id: 36,
+        bankNo: `Câu 90`,
+        topic: `Quy trình lựa chọn nhà thầu qua mạng`,
+        question: `Đối với gói thầu mua sắm hàng hóa tổ chức đấu thầu rộng rãi qua mạng, kinh nghiệm thực hiện hợp đồng cung cấp hàng hóa tương tự được xét trên cơ sở nào sau đây?`,
+        options: [
+          `A. Hàng hóa phải trùng hoàn toàn ký mã hiệu với gói thầu đang xét`,
+          `B. Hàng hóa thuộc cùng lĩnh vực tổng quát (khi chưa có mã HS)`,
+          `C. Hàng hóa có 4 số đầu tiên của mã HS cùng với mã HS của hàng hóa thuộc gói thầu (hoặc Thông tư 14/2018/TT-BYT đối với TBYT)`,
+          `D. Phương án B và C đều đúng`
+        ],
+        answer: 3,
+        explanation: `Thông tư 22/2024/TT-BKHĐT quy định tính tương tự của hàng hóa xét theo mã HS (cùng 4 số đầu tiên của mã HS; đối với trang thiết bị y tế theo Thông tư 14/2018/TT-BYT) hoặc cùng lĩnh vực tổng quát nếu hàng hóa chưa được công bố mã HS.`,
+        legal: `Mục 2.1 Chương III Mẫu E-HSMT Hàng hóa — Thông tư 22/2024/TT-BKHĐT (số 1407 + 1408)`
+      },
+      {
+        id: 37,
+        bankNo: `Câu 81`,
+        topic: `Quy trình lựa chọn nhà thầu qua mạng`,
+        question: `Việc đánh giá về nhân sự chủ chốt và thiết bị chủ yếu đối với gói thầu xây lắp tổ chức đấu thầu rộng rãi được thực hiện như thế nào?`,
+        options: [
+          `A. Đánh giá đối với tất cả các nhà thầu tham dự thầu`,
+          `B. Chỉ đánh giá đối với nhà thầu xếp thứ nhất`,
+          `C. Đánh giá đối với tất cả các nhà thầu đạt về kỹ thuật`,
+          `D. Không đánh giá về nhân sự chủ chốt và thiết bị chủ yếu`
+        ],
+        answer: 0,
+        explanation: `Theo quy định đánh giá năng lực, kinh nghiệm trong đấu thầu xây lắp rộng rãi, nhân sự chủ chốt và thiết bị chủ yếu là tiêu chuẩn đánh giá ở bước năng lực, kinh nghiệm; đồng thời trường hợp nhân sự kê khai không đáp ứng hoặc trùng thời gian huy động thì được phép bổ sung, thay thế 01 lần (tối thiểu 03 ngày làm việc).`,
+        legal: `Mục 2 Chương III Thông tư 22/2024/TT-BKHĐT (số 1413 + 1414, 1453 + 1454)`
+      },
+      {
+        id: 38,
+        bankNo: `Câu 26`,
+        topic: `Quy trình lựa chọn nhà thầu qua mạng`,
+        question: `Đối với gói thầu cung cấp dịch vụ tư vấn không qua mạng, trường hợp hồ sơ đề xuất về tài chính của nhà thầu không vượt qua bước đánh giá về kỹ thuật sẽ được xử lý như thế nào?`,
+        options: [
+          `A. Trả lại nguyên trạng cho nhà thầu trong thời hạn 10 ngày kể từ ngày ký hợp đồng với nhà thầu được lựa chọn`,
+          `B. Trả lại nguyên trạng cho nhà thầu trong thời hạn 05 ngày kể từ ngày ký hợp đồng với nhà thầu được lựa chọn`,
+          `C. Trả lại nguyên trạng cho nhà thầu trong thời hạn 15 ngày kể từ ngày ký hợp đồng với nhà thầu được lựa chọn`,
+          `D. Lưu trữ theo quy định của Pháp luật về lưu trữ`
+        ],
+        answer: 0,
+        explanation: `Hồ sơ đề xuất tài chính (còn nguyên niêm phong) của nhà thầu không vượt qua bước đánh giá kỹ thuật được trả lại nguyên trạng trong thời hạn 10 ngày kể từ ngày ký hợp đồng với nhà thầu trúng thầu.`,
+        legal: `Nghị định số 214/2025/NĐ-CP (Xử lý hồ sơ đề xuất tài chính không được mở)`
+      },
+      {
+        id: 39,
+        bankNo: `Câu 197`,
+        topic: `Quy trình lựa chọn nhà thầu qua mạng`,
+        question: `Đối với gói thầu áp dụng đấu thầu trước quy định tại Điều 42 Luật Đấu thầu, nếu dự án được phê duyệt dẫn đến tăng giá gói thầu từ 30% trở lên hoặc thay đổi tiêu chuẩn đánh giá quan trọng về kỹ thuật hoặc thay đổi cấp công trình trong HSMT đã phát hành thì chủ đầu tư xử lý thế nào?`,
+        options: [
+          `A. Tiếp tục đánh giá hồ sơ dự thầu trong trường hợp đã mở thầu`,
+          `B. Được sửa đổi và phát hành bổ sung hồ sơ mời thầu trong trường hợp chưa mở thầu`,
+          `C. Được sửa đổi khối lượng và thương thảo ký hợp đồng ngay`,
+          `D. Hủy thầu`
+        ],
+        answer: 3,
+        explanation: `Khi dự án được phê duyệt chính thức làm tăng giá gói thầu/dự toán từ 30% trở lên hoặc làm thay đổi tiêu chuẩn đánh giá kỹ thuật quan trọng/cấp công trình so với HSMT đã phát hành trong đấu thầu trước, chủ đầu tư phải hủy thầu.`,
+        legal: `Điều 42 Luật Đấu thầu số 22/2023/QH15; Nghị định 214/2025/NĐ-CP`
+      },
+      {
+        id: 40,
+        bankNo: `Câu 1445-UĐ`,
+        topic: `Quy trình lựa chọn nhà thầu qua mạng`,
+        question: `Khi áp dụng phương pháp giá đánh giá cho gói thầu hàng hóa có ưu đãi, hàng hóa KHÔNG thuộc đối tượng được hưởng ưu đãi bị cộng thêm bao nhiêu % giá dự thầu (sau hiệu chỉnh sai lệch thừa, trừ giảm giá) để so sánh, xếp hạng?`,
+        options: [
+          `A. Cộng thêm 2,5%`,
+          `B. Cộng thêm 7,5%`,
+          `C. Cộng thêm 10%`,
+          `D. Cộng thêm 15%`
+        ],
+        answer: 2,
+        explanation: `Theo Thông tư 22/2024/TT-BKHĐT, hàng hóa không thuộc đối tượng hưởng ưu đãi cộng thêm 10% vào giá đánh giá; hàng hóa hưởng ưu đãi có tỷ lệ chi phí sản xuất trong nước dưới 50% cộng thêm 2,5% (trừ cơ sở có từ 50% lao động là người khuyết tật, thương binh, dân tộc thiểu số hợp đồng ≥ 3 tháng thì không cộng thêm).`,
+        legal: `Thông tư số 22/2024/TT-BKHĐT (số 1445 + 1446); Điều 10 Luật Đấu thầu 2023`
+      },
+
+      // === 4. HỢP ĐỒNG ===
+      {
+        id: 41,
+        bankNo: `Câu 116`,
+        topic: `Hợp đồng`,
+        question: `Hợp đồng theo tỷ lệ phần trăm có thể được áp dụng đối với gói thầu nào sau đây?`,
+        options: [
+          `A. Mua sắm thiết bị y tế`,
+          `B. Xây dựng công trình`,
+          `C. Bảo hiểm công trình mà giá trị hợp đồng được xác định chính xác trên cơ sở giá trị công trình thực tế được nghiệm thu`,
+          `D. Tư vấn giám sát`
+        ],
+        answer: 2,
+        explanation: `Loại hợp đồng theo tỷ lệ phần trăm chỉ áp dụng cho gói thầu bảo hiểm công trình khi giá trị hợp đồng được xác định chính xác dựa trên giá trị công trình thực tế được nghiệm thu.`,
+        legal: `Khoản 5 Điều 64 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 42,
+        bankNo: `Câu 123`,
+        topic: `Hợp đồng`,
+        question: `Trường hợp nào sau đây các bên có thể thỏa thuận trong hợp đồng về quy trình, thủ tục sửa đổi hợp đồng?`,
+        options: [
+          `A. Khi có sự thay đổi về chính sách, pháp luật làm ảnh hưởng trực tiếp đến việc thực hiện hợp đồng`,
+          `B. Khi có sự kiện bất khả kháng`,
+          `C. Khi thay đổi phương thức vận chuyển, địa điểm giao hàng, dịch vụ liên quan đối với gói thầu mua sắm hàng hóa`,
+          `D. Tất cả phương án trên đều đúng`
+        ],
+        answer: 3,
+        explanation: `Điều 70 Luật Đấu thầu và các điều kiện chung hợp đồng trong Thông tư 22/2024/TT-BKHĐT cho phép các bên quy định trước các tình huống sửa đổi hợp đồng khi thay đổi chính sách pháp luật, bất khả kháng hoặc điều chỉnh giao nhận hàng hóa.`,
+        legal: `Điều 70 Luật Đấu thầu số 22/2023/QH15; Điều kiện chung hợp đồng Thông tư 22/2024/TT-BKHĐT`
+      },
+      {
+        id: 43,
+        bankNo: `Câu 199`,
+        topic: `Hợp đồng`,
+        question: `Trường hợp nào sau đây chủ đầu tư và nhà thầu liên danh được thỏa thuận điều chỉnh phạm vi công việc giữa các thành viên liên danh?`,
+        options: [
+          `A. Khi một thành viên liên danh không muốn tiếp tục thực hiện phần việc đã cam kết`,
+          `B. Khi chủ đầu tư thấy một thành viên thực hiện tốt nên muốn điều chuyển toàn bộ phần việc cho thành viên đó`,
+          `C. Khi cần đẩy nhanh tiến độ thực hiện hợp đồng hoặc do điều kiện khách quan không phải lỗi của nhà thầu làm ảnh hưởng tiến độ`,
+          `D. Khi một thành viên đề nghị chuyển nhượng phần việc để tiết kiệm chi phí`
+        ],
+        answer: 2,
+        explanation: `Việc điều chỉnh phân chia phạm vi công việc giữa các thành viên trong liên danh chỉ được chấp thuận khi cần đẩy nhanh tiến độ hoặc do nguyên nhân khách quan không phải lỗi của nhà thầu gây ảnh hưởng đến tiến độ thực hiện hợp đồng.`,
+        legal: `Điều 70 Luật Đấu thầu số 22/2023/QH15; Nghị định 214/2025/NĐ-CP`
+      },
+      {
+        id: 44,
+        bankNo: `Câu 198`,
+        topic: `Hợp đồng`,
+        question: `Trường hợp nhà thầu trúng thầu không tiến hành hoàn thiện, ký kết hợp đồng hoặc tại thời điểm ký kết không đáp ứng yêu cầu về năng lực kỹ thuật, tài chính quy định tại khoản 2 Điều 66 Luật Đấu thầu thì chủ đầu tư xử lý thế nào?`,
+        options: [
+          `A. Hủy quyết định phê duyệt kết quả lựa chọn nhà thầu trúng thầu`,
+          `B. Hủy thầu ngay lập tức trong mọi trường hợp`,
+          `C. Không công nhận kết quả mở thầu`,
+          `D. Đình chỉ cuộc thầu`
+        ],
+        answer: 0,
+        explanation: `Chủ đầu tư hủy quyết định phê duyệt kết quả lựa chọn nhà thầu đối với nhà thầu đó (và có thể mời nhà thầu xếp hạng tiếp theo vào hoàn thiện hợp đồng theo quy định).`,
+        legal: `Khoản 2 Điều 66 Luật Đấu thầu số 22/2023/QH15; Nghị định 214/2025/NĐ-CP`
+      },
+      {
+        id: 45,
+        bankNo: `Câu 275-B`,
+        topic: `Hợp đồng`,
+        question: `Khi hoàn thiện hợp đồng, trường hợp nào nhà thầu được quyền từ chối hoàn thiện hợp đồng mà KHÔNG bị đánh giá về uy tín và KHÔNG bị tịch thu bảo đảm dự thầu?`,
+        options: [
+          `A. Khi nhà thầu tự nhận thấy chào giá quá thấp nên xin rút`,
+          `B. Khi chủ đầu tư đưa ra các yêu cầu khi hoàn thiện hợp đồng không phù hợp với nội dung hồ sơ mời thầu, hồ sơ dự thầu`,
+          `C. Khi nhà thầu yêu cầu tăng đơn giá nhưng chủ đầu tư không đồng ý`,
+          `D. Phương án B và C đều đúng`
+        ],
+        answer: 1,
+        explanation: `Nếu chủ đầu tư đặt ra các điều kiện trái hoặc không phù hợp với nội dung E-HSMT và E-HSDT trong quá trình hoàn thiện hợp đồng, nhà thầu có quyền từ chối mà không bị mất bảo đảm dự thầu hay bị trừ uy tín.`,
+        legal: `Điều 66 Luật Đấu thầu 2023; Nghị định 214/2025/NĐ-CP`
+      },
+      {
+        id: 46,
+        bankNo: `Câu 26.4-TT22`,
+        topic: `Hợp đồng`,
+        question: `Theo Mẫu hợp đồng tại Thông tư 22/2024/TT-BKHĐT, khi xảy ra sự kiện bất khả kháng, bên bị ảnh hưởng phải thông báo bằng văn bản cho bên kia trong vòng bao nhiêu ngày kể từ ngày xảy ra sự kiện?`,
+        options: [
+          `A. Trong vòng 07 ngày`,
+          `B. Trong vòng 14 ngày kể từ ngày xảy ra sự kiện bất khả kháng`,
+          `C. Trong vòng 21 ngày`,
+          `D. Trong vòng 30 ngày`
+        ],
+        answer: 1,
+        explanation: `Mục 26.4 E-ĐKC quy định bên bị ảnh hưởng bởi sự kiện bất khả kháng phải thông báo kịp thời bằng văn bản trong vòng 14 ngày kể từ ngày xảy ra sự kiện, kèm xác nhận của cơ quan có thẩm quyền tại nơi xảy ra sự kiện.`,
+        legal: `Mục 26.3 và 26.4 E-ĐKC Thông tư số 22/2024/TT-BKHĐT (số 1475 + 1476)`
+      },
+      {
+        id: 47,
+        bankNo: `Câu 18.1-TT22`,
+        topic: `Hợp đồng`,
+        question: `Đối với nhà thầu liên danh, nếu bất kỳ thành viên nào trong liên danh vi phạm dẫn đến không được hoàn trả bảo đảm dự thầu thì xử lý giá trị bảo đảm dự thầu như thế nào?`,
+        options: [
+          `A. Chỉ tịch thu phần bảo đảm dự thầu của thành viên vi phạm`,
+          `B. Giá trị bảo đảm dự thầu của tất cả thành viên trong liên danh sẽ không được hoàn trả`,
+          `C. Chỉ tịch thu của thành viên đứng đầu liên danh`,
+          `D. Chia đều mức phạt bằng 50% giá trị bảo đảm`
+        ],
+        answer: 1,
+        explanation: `Theo Mục 18.1 E-CDNT, nếu bất kỳ thành viên nào trong liên danh vi phạm quy định tại điểm b Mục 18.5 E-CDNT dẫn đến không được hoàn trả bảo đảm dự thầu, thì bảo đảm dự thầu của tất cả thành viên trong liên danh sẽ không được hoàn trả.`,
+        legal: `Mục 18.1 E-CDNT Thông tư số 22/2024/TT-BKHĐT (số 1383 + 1384)`
+      },
+
+      // === 5. MUA SẮM TRỰC TUYẾN / TẬP TRUNG & HIỆP ĐỊNH ===
+      {
+        id: 48,
+        bankNo: `Câu 234`,
+        topic: `Mua sắm trực tuyến/tập trung`,
+        question: `Theo quy định tại Thông tư số 79/2025/TT-BTC, thời điểm bắt đầu và kết thúc chào giá trực tuyến theo quy trình rút gọn được quy định như thế nào?`,
+        options: [
+          `A. Thời điểm bắt đầu và kết thúc phải trong giờ hành chính`,
+          `B. Thời điểm bắt đầu không bắt buộc trong giờ hành chính nhưng kết thúc phải trong giờ hành chính`,
+          `C. Thời điểm bắt đầu và kết thúc không bắt buộc trong giờ hành chính`,
+          `D. Tất cả phương án trên đều sai`
+        ],
+        answer: 1,
+        explanation: `Theo quy định về chào giá trực tuyến rút gọn tại Thông tư 79/2025/TT-BTC, phiên chào giá có thể mở linh hoạt nhưng thời điểm kết thúc phải nằm trong giờ hành chính để đảm bảo thuận tiện cho việc theo dõi, xác nhận và xử lý trên Hệ thống.`,
+        legal: `Thông tư số 79/2025/TT-BTC của Bộ Tài chính`
+      },
+      {
+        id: 49,
+        bankNo: `Câu 235`,
+        topic: `Mua sắm trực tuyến/tập trung`,
+        question: `Đối với gói thầu chào giá trực tuyến rút gọn, nhà thầu xác nhận về việc chấp thuận được trao hợp đồng trong thời gian tối đa bao lâu kể từ ngày chủ đầu tư mời nhà thầu xác nhận trên Hệ thống?`,
+        options: [
+          `A. 03 ngày`,
+          `B. 03 ngày làm việc`,
+          `C. 05 ngày`,
+          `D. 05 ngày làm việc`
+        ],
+        answer: 1,
+        explanation: `Nhà thầu xếp hạng thứ nhất có tối đa 03 ngày làm việc kể từ ngày chủ đầu tư gửi lời mời trên Hệ thống mạng đấu thầu quốc gia để xác nhận chấp thuận được trao hợp đồng.`,
+        legal: `Nghị định số 214/2025/NĐ-CP; Thông tư 79/2025/TT-BTC`
+      },
+      {
+        id: 50,
+        bankNo: `Câu 261`,
+        topic: `Mua sắm trực tuyến/tập trung`,
+        question: `Đối với dự toán mua sắm, hạn mức áp dụng chào giá trực tuyến theo quy trình thông thường đối với gói thầu mua sắm hàng hóa là bao nhiêu?`,
+        options: [
+          `A. Có giá gói thầu không quá 500 triệu đồng`,
+          `B. Có giá gói thầu không quá 02 tỷ đồng`,
+          `C. Có giá gói thầu không quá 05 tỷ đồng`,
+          `D. Không có quy định về hạn mức áp dụng`
+        ],
+        answer: 2,
+        explanation: `Đối với dự toán mua sắm hàng hóa có sẵn, tiêu chuẩn hóa, chào giá trực tuyến theo quy trình thông thường được áp dụng cho gói thầu trong hạn mức không quá 05 tỷ đồng (theo khung quy định về mua sắm trực tuyến/chào giá trực tuyến).`,
+        legal: `Nghị định số 214/2025/NĐ-CP; Điều 29 Luật Đấu thầu 2023`
+      },
+      {
+        id: 51,
+        bankNo: `Câu 343`,
+        topic: `Mua sắm trực tuyến/tập trung`,
+        question: `Đối với gói thầu mua sắm hàng hóa, dịch vụ có giá trị dưới 500 triệu đồng áp dụng lựa chọn nhà thầu theo hình thức mua sắm trực tuyến, việc ký kết hợp đồng được thực hiện như thế nào?`,
+        options: [
+          `A. Bắt buộc ký hợp đồng điện tử trên Hệ thống mạng đấu thầu quốc gia`,
+          `B. Không bắt buộc ký hợp đồng điện tử, chủ đầu tư quyết định hình thức ký kết`,
+          `C. Ký hợp đồng điện tử trên Hệ thống chỉ khi thanh toán qua Kho bạc nhà nước`,
+          `D. Thực hiện hoàn toàn bằng hợp đồng giấy`
+        ],
+        answer: 1,
+        explanation: `Đối với mua sắm trực tuyến giá trị nhỏ (dưới hạn mức 500 triệu đồng), không bắt buộc phải ký kết hợp đồng điện tử trên Hệ thống; chủ đầu tư tự quyết định hình thức ký kết hợp đồng phù hợp.`,
+        legal: `Nghị định số 214/2025/NĐ-CP; Thông tư 79/2025/TT-BTC`
+      },
+      {
+        id: 52,
+        bankNo: `Câu 255`,
+        topic: `Mua sắm trực tuyến/tập trung`,
+        question: `Việc phải ký kết hợp đồng điện tử trên Hệ thống mạng đấu thầu quốc gia bắt buộc áp dụng đối với gói thầu nào sau đây?`,
+        options: [
+          `A. Gói thầu áp dụng đấu thầu rộng rãi, đấu thầu hạn chế, chào hàng cạnh tranh, chào giá trực tuyến, mua sắm trực tuyến thanh toán qua Kho bạc nhà nước`,
+          `B. Các gói thầu không thanh toán qua Kho bạc nhà nước`,
+          `C. Tất cả các gói thầu áp dụng đấu thầu qua mạng (trừ các trường hợp loại trừ theo lộ trình)`,
+          `D. Tất cả các gói thầu qua mạng và không qua mạng`
+        ],
+        answer: 2,
+        explanation: `Theo lộ trình áp dụng hợp đồng điện tử trên Hệ thống mạng đấu thầu quốc gia tại Thông tư 22/2024/TT-BKHĐT và Thông tư 79/2025/TT-BTC, việc ký kết hợp đồng điện tử gắn liền với các gói thầu tổ chức lựa chọn nhà thầu qua mạng.`,
+        legal: `Thông tư số 22/2024/TT-BKHĐT; Thông tư số 79/2025/TT-BTC`
+      },
+      {
+        id: 53,
+        bankNo: `Câu 139`,
+        topic: `Mua sắm trực tuyến/tập trung`,
+        question: `Trách nhiệm trong mua sắm tập trung thuộc về chủ thể nào theo quy định của Luật Đấu thầu?`,
+        options: [
+          `A. Đơn vị mua sắm tập trung thực hiện trách nhiệm của người có thẩm quyền`,
+          `B. Đơn vị mua sắm tập trung thực hiện trách nhiệm của chủ đầu tư (đối với ký thỏa thuận khung/tổ chức LCNT)`,
+          `C. Đơn vị mua sắm tập trung thực hiện trách nhiệm của bên mời thầu theo quy định của Luật Đấu thầu`,
+          `D. Đơn vị mua sắm tập trung thực hiện trách nhiệm của tổ chuyên gia`
+        ],
+        answer: 1,
+        explanation: `Trong mua sắm tập trung, đơn vị mua sắm tập trung thực hiện trách nhiệm của chủ đầu tư trong việc tổ chức lựa chọn nhà thầu, ký thỏa thuận khung và quản lý thực hiện thỏa thuận khung.`,
+        legal: `Điều 53 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 54,
+        bankNo: `Câu 315`,
+        topic: `Mua sắm trực tuyến/tập trung`,
+        question: `Theo quy định về đấu thầu thuộc phạm vi điều chỉnh của các Hiệp định thương mại tự do (CPTPP, EVFTA, UKVFTA), "đấu thầu nội khối" là gì?`,
+        options: [
+          `A. Đấu thầu mà chỉ có nhà thầu nội khối (các nước thành viên hiệp định) được tham dự`,
+          `B. Đấu thầu chỉ dành cho các dự án trong khối CPTPP`,
+          `C. Đấu thầu chỉ giữa các nước thành viên EVFTA và UKVFTA`,
+          `D. Đấu thầu trong nước`
+        ],
+        answer: 0,
+        explanation: `Đấu thầu nội khối là cuộc thầu được tổ chức mà chỉ có nhà thầu thuộc các quốc gia thành viên của Hiệp định thương mại tự do tương ứng (như CPTPP, EVFTA, UKVFTA) mới được phép tham dự.`,
+        legal: `Nghị định số 95/2020/NĐ-CP và Nghị định số 09/2022/NĐ-CP`
+      },
+      {
+        id: 55,
+        bankNo: `Câu 318`,
+        topic: `Mua sắm trực tuyến/tập trung`,
+        question: `Hiệp định thương mại tự do giữa Cộng hòa xã hội chủ nghĩa Việt Nam và Liên minh Châu Âu (EVFTA) có hiệu lực từ ngày nào?`,
+        options: [
+          `A. 01/7/2020`,
+          `B. 01/8/2020`,
+          `C. 01/9/2020`,
+          `D. 01/10/2020`
+        ],
+        answer: 1,
+        explanation: `Hiệp định EVFTA chính thức có hiệu lực từ ngày 01 tháng 8 năm 2020.`,
+        legal: `Hiệp định EVFTA; Nghị định 09/2022/NĐ-CP`
+      },
+
+      // === 6. GIẢI QUYẾT KIẾN NGHỊ & XỬ LÝ TÌNH HUỐNG ===
+      {
+        id: 56,
+        bankNo: `Câu 38.2-TT22`,
+        topic: `Giải quyết kiến nghị & xử lý tình huống`,
+        question: `Khi nhà thầu kiến nghị về các vấn đề trong quá trình lựa chọn nhà thầu, nhà thầu gửi kiến nghị lên Chủ đầu tư và Người có thẩm quyền bằng cách thức nào?`,
+        options: [
+          `A. Gửi văn bản giấy cho cả Chủ đầu tư và Người có thẩm quyền`,
+          `B. Kiến nghị lên Chủ đầu tư gửi trực tiếp trên Hệ thống mạng đấu thầu quốc gia; kiến nghị lên Người có thẩm quyền gửi theo địa chỉ quy định tại E-BDL`,
+          `C. Gửi qua email cá nhân của Tổ trưởng tổ chuyên gia`,
+          `D. Gửi trực tiếp đến Bộ phận Kho bạc Nhà nước`
+        ],
+        answer: 1,
+        explanation: `Mục 38.2 E-CDNT Thông tư 22/2024/TT-BKHĐT quy định rõ: kiến nghị lên Chủ đầu tư phải gửi trực tiếp trên Hệ thống; kiến nghị lên Người có thẩm quyền gửi theo địa chỉ (Bộ phận thường trực Hội đồng tư vấn giải quyết kiến nghị) nêu tại E-BDL.`,
+        legal: `Mục 38.2 E-CDNT Thông tư 22/2024/TT-BKHĐT (số 1385 + 1386, 1413 + 1414); Điều 89–91 Luật Đấu thầu 2023`
+      },
+      {
+        id: 57,
+        bankNo: `Câu 78`,
+        topic: `Giải quyết kiến nghị & xử lý tình huống`,
+        question: `Trong quá trình đánh giá hồ sơ dự thầu gói thầu áp dụng đấu thầu rộng rãi, chủ đầu tư phát hiện người đại diện theo pháp luật của 02 nhà thầu tham dự thầu là anh em ruột thì xem xét, đánh giá như thế nào?`,
+        options: [
+          `A. Thuộc hành vi bị cấm trong đấu thầu (thông thầu)`,
+          `B. Không đáp ứng yêu cầu về bảo đảm cạnh tranh trong đấu thầu`,
+          `C. Hồ sơ dự thầu của một trong hai nhà thầu không được xem xét`,
+          `D. Không thuộc hành vi bị cấm, không vi phạm quy định về bảo đảm cạnh tranh trong đấu thầu`
+        ],
+        answer: 3,
+        explanation: `Pháp luật đấu thầu quy định sự độc lập giữa nhà thầu với chủ đầu tư, bên mời thầu, nhà thầu tư vấn; quan hệ huyết thống giữa người đại diện của 02 nhà thầu độc lập khi tham dự đấu thầu rộng rãi không tự động bị coi là vi phạm bảo đảm cạnh tranh hay hành vi bị cấm (trừ khi chứng minh được có sự thông đồng/gian lận cụ thể theo Điều 16).`,
+        legal: `Điều 6 và Điều 16 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 58,
+        bankNo: `Câu 94`,
+        topic: `Giải quyết kiến nghị & xử lý tình huống`,
+        question: `Đối với gói thầu mua sắm hàng hóa áp dụng đấu thầu rộng rãi, trong hồ sơ dự thầu nhà thầu KHÔNG đề xuất cụ thể ký mã hiệu, nhãn hiệu, xuất xứ, hãng sản xuất thì xử lý như thế nào?`,
+        options: [
+          `A. Chủ đầu tư yêu cầu nhà thầu làm rõ các thông tin này để làm cơ sở đánh giá trên cơ sở không được thay đổi giá dự thầu`,
+          `B. Tổ chuyên gia căn cứ theo cataloge, đề xuất kỹ thuật kèm theo để làm cơ sở đánh giá`,
+          `C. Hồ sơ dự thầu của nhà thầu không được xem xét, đánh giá (bị loại)`,
+          `D. Tiếp tục đánh giá, nếu trúng thầu mới bổ sung`
+        ],
+        answer: 2,
+        explanation: `Ký mã hiệu, nhãn hiệu, xuất xứ, hãng sản xuất là các thông số cốt lõi xác định đối tượng hàng hóa chào thầu; việc bỏ trống hoàn toàn không được phép làm rõ bổ sung sau đóng thầu làm thay đổi bản chất hàng hóa chào thầu.`,
+        legal: `Thông tư số 22/2024/TT-BKHĐT; Nghị định 214/2025/NĐ-CP`
+      },
+      {
+        id: 59,
+        bankNo: `Câu 366`,
+        topic: `Giải quyết kiến nghị & xử lý tình huống`,
+        question: `Nhà thầu không thực hiện gia hạn hiệu lực hồ sơ dự thầu theo đề nghị của chủ đầu tư thì xử lý như thế nào?`,
+        options: [
+          `A. Không được hoàn trả giá trị bảo đảm dự thầu`,
+          `B. Bị đánh giá về uy tín trong tham dự thầu và đăng tải trên Hệ thống mạng đấu thầu quốc gia`,
+          `C. Được hoàn trả bảo đảm dự thầu cho nhà thầu (không tiếp tục đánh giá E-HSDT của nhà thầu đó)`,
+          `D. Phương án A và B đều đúng`
+        ],
+        answer: 2,
+        explanation: `Nhà thầu có quyền từ chối gia hạn hiệu lực E-HSDT khi được đề nghị; khi đó nhà thầu không tiếp tục tham gia đánh giá nhưng KHÔNG bị tịch thu bảo đảm dự thầu và được hoàn trả bảo đảm dự thầu.`,
+        legal: `Mục 18.5 E-CDNT Thông tư 22/2024/TT-BKHĐT; Nghị định 214/2025/NĐ-CP`
+      },
+      {
+        id: 60,
+        bankNo: `Câu 1413-GL`,
+        topic: `Giải quyết kiến nghị & xử lý tình huống`,
+        question: `Trường hợp nhà thầu kê khai nhân sự chủ chốt KHÔNG trung thực trong E-HSDT thì bị xử lý như thế nào?`,
+        options: [
+          `A. Được phép thay thế nhân sự chủ chốt khác 01 lần trong thời hạn tối thiểu 03 ngày làm việc`,
+          `B. Không được thay thế nhân sự khác, E-HSDT bị loại và bị coi là hành vi gian lận theo khoản 4 Điều 16 Luật Đấu thầu`,
+          `C. Chỉ trừ điểm uy tín khi chấm kỹ thuật`,
+          `D. Yêu cầu nhà thầu cam kết lại tại bước hoàn thiện hợp đồng`
+        ],
+        answer: 1,
+        explanation: `Thông tư 22/2024/TT-BKHĐT phân biệt rõ: nếu nhân sự không đáp ứng hoặc trùng lịch, được bổ sung thay thế 01 lần (≥ 03 ngày làm việc). Riêng trường hợp kê khai KHÔNG trung thực thì tuyệt đối không được thay thế, E-HSDT bị loại và xử lý hành vi gian lận theo khoản 4 Điều 16 Luật Đấu thầu và điểm a khoản 1 Điều 125 Nghị định 24/2024/NĐ-CP.`,
+        legal: `Thông tư số 22/2024/TT-BKHĐT (số 1413 + 1414); Khoản 4 Điều 16 Luật Đấu thầu 2023`
+      },
+      {
+        id: 61,
+        bankNo: `Câu 363`,
+        topic: `Giải quyết kiến nghị & xử lý tình huống`,
+        question: `Nhà thầu tư vấn lập hồ sơ mời thầu gói thầu xây lắp được phép tham dự gói thầu nào sau đây?`,
+        options: [
+          `A. Tư vấn đánh giá hồ sơ dự thầu gói thầu xây lắp mà mình đã lập hồ sơ mời thầu`,
+          `B. Tư vấn thẩm định kết quả lựa chọn nhà thầu gói thầu xây lắp mà mình đã lập hồ sơ mời thầu`,
+          `C. Tư vấn giám sát thi công gói thầu xây lắp mà mình đã lập hồ sơ mời thầu`,
+          `D. Tất cả các phương án trên đều đúng`
+        ],
+        answer: 2,
+        explanation: `Nhà thầu lập hồ sơ mời thầu gói thầu xây lắp không được đánh giá HSDT hoặc thẩm định kết quả của chính gói thầu đó, nhưng được phép tham gia tư vấn giám sát thi công công trình (vì tư vấn giám sát là bước thực hiện hợp đồng thi công xây lắp, độc lập với nhà thầu thi công).`,
+        legal: `Điều 6 Luật Đấu thầu số 22/2023/QH15; Nghị định 214/2025/NĐ-CP`
+      },
+      {
+        id: 62,
+        bankNo: `Câu 26-SS`,
+        topic: `Giải quyết kiến nghị & xử lý tình huống`,
+        question: `Theo Mục 26 E-CDNT Thông tư 22/2024/TT-BKHĐT, đối với các sai sót không nghiêm trọng trong E-HSDT liên quan đến yêu cầu về tài liệu, bên mời thầu có thể xử lý như thế nào?`,
+        options: [
+          `A. Loại ngay E-HSDT vì thiếu tài liệu tại thời điểm đóng thầu`,
+          `B. Yêu cầu nhà thầu cung cấp thông tin, tài liệu trong thời hạn hợp lý để khắc phục, với điều kiện không liên quan đến bất kỳ yếu tố nào của giá dự thầu`,
+          `C. Cho phép nhà thầu điều chỉnh lại giá dự thầu cho phù hợp với tài liệu mới`,
+          `D. Chuyển hồ sơ sang hội đồng giải quyết kiến nghị`
+        ],
+        answer: 1,
+        explanation: `Mục 26.2 E-CDNT cho phép yêu cầu nhà thầu bổ sung, làm rõ các sai sót không nghiêm trọng về tài liệu trong thời hạn hợp lý, miễn là E-HSDT đáp ứng cơ bản yêu cầu và việc khắc phục không làm thay đổi bất kỳ yếu tố nào của giá dự thầu.`,
+        legal: `Mục 26.1 và 26.2 E-CDNT Thông tư số 22/2024/TT-BKHĐT (số 1451 + 1452)`
+      },
+
+      // === 7. LỰA CHỌN NHÀ ĐẦU TƯ ===
+      {
+        id: 63,
+        bankNo: `Câu 411`,
+        topic: `Lựa chọn nhà đầu tư`,
+        question: `Trường hợp nào sau đây bắt buộc phải lựa chọn nhà đầu tư theo quy định tại Luật Đấu thầu?`,
+        options: [
+          `A. Dự án đầu tư có sử dụng đất thuộc trường hợp phải tổ chức đấu thầu theo quy định của pháp luật về đất đai`,
+          `B. Dự án đầu tư thuộc trường hợp phải tổ chức đấu thầu theo quy định của pháp luật quản lý ngành, lĩnh vực`,
+          `C. Dự án đầu tư theo phương thức đối tác công tư (PPP)`,
+          `D. Phương án A và B đều đúng`
+        ],
+        answer: 3,
+        explanation: `Luật Đấu thầu 2023 điều chỉnh hoạt động lựa chọn nhà đầu tư đối với 2 nhóm dự án đầu tư kinh doanh: dự án có sử dụng đất phải đấu thầu theo Luật Đất đai và dự án phải đấu thầu theo pháp luật ngành, lĩnh vực (dự án PPP do Luật PPP điều chỉnh).`,
+        legal: `Khoản 3 Điều 1 và Điều 2 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 64,
+        bankNo: `Câu 416`,
+        topic: `Lựa chọn nhà đầu tư`,
+        question: `Phát biểu nào sau đây là đúng đối với đấu thầu lựa chọn nhà đầu tư trong nước?`,
+        options: [
+          `A. Nhà đầu tư trong nước được sử dụng đối tác là nhà thầu nước ngoài khi tham gia đấu thầu trong nước đối với dự án có yêu cầu công nghệ, kỹ thuật tiên tiến, kinh nghiệm quản lý quốc tế`,
+          `B. Chỉ nhà đầu tư trong nước được tham dự thầu`,
+          `C. Nhà đầu tư trong nước được liên danh với nhà đầu tư nước ngoài nhưng nhà đầu tư trong nước phải đứng đầu liên danh`,
+          `D. Phương án A và B đều đúng`
+        ],
+        answer: 3,
+        explanation: `Trong đấu thầu lựa chọn nhà đầu tư trong nước, chỉ nhà đầu tư trong nước được tham dự thầu (không liên danh với nhà đầu tư nước ngoài), nhưng được phép sử dụng đối tác là nhà thầu nước ngoài để đáp ứng yêu cầu công nghệ, kỹ thuật tiên tiến hoặc kinh nghiệm quản lý quốc tế.`,
+        legal: `Điều 11 và Điều 35 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 65,
+        bankNo: `Câu 424`,
+        topic: `Lựa chọn nhà đầu tư`,
+        question: `Đối với lựa chọn nhà đầu tư, hồ sơ mời quan tâm KHÔNG bao gồm tiêu chuẩn đánh giá nào sau đây?`,
+        options: [
+          `A. Yêu cầu về vốn chủ sở hữu`,
+          `B. Khả năng huy động vốn vay`,
+          `C. Kinh nghiệm thực hiện dự án tương tự`,
+          `D. Phương án B và C đều đúng`
+        ],
+        answer: 1,
+        explanation: `Hồ sơ mời quan tâm trong lựa chọn nhà đầu tư chủ yếu đánh giá sơ bộ năng lực, kinh nghiệm (vốn chủ sở hữu, kinh nghiệm dự án tương tự); khả năng huy động vốn vay/phương án tài chính chi tiết là nội dung của hồ sơ mời thầu ở giai đoạn tiếp theo.`,
+        legal: `Điều 46 và Điều 47 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 66,
+        bankNo: `Câu 425`,
+        topic: `Lựa chọn nhà đầu tư`,
+        question: `Đối với lựa chọn nhà đầu tư, phương pháp được sử dụng trong đánh giá hồ sơ dự thầu là gì?`,
+        options: [
+          `A. Phương pháp kết hợp giữa kỹ thuật và giá`,
+          `B. Phương pháp lợi ích xã hội, lợi ích nhà nước`,
+          `C. Phương pháp giá đánh giá`,
+          `D. Tất cả các phương án trên đều đúng`
+        ],
+        answer: 1,
+        explanation: `Đánh giá hồ sơ dự thầu lựa chọn nhà đầu tư sử dụng phương pháp "Lợi ích xã hội, lợi ích nhà nước" dựa trên các tiêu chuẩn tổng hợp về năng lực, kinh nghiệm, phương án đầu tư kinh doanh và hiệu quả sử dụng đất / đầu tư phát triển ngành, lĩnh vực, địa phương.`,
+        legal: `Điều 62 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 67,
+        bankNo: `Câu 427`,
+        topic: `Lựa chọn nhà đầu tư`,
+        question: `Sử dụng tiêu chuẩn đánh giá nào khi đánh giá về mặt tài chính (hiệu quả đầu tư) trong lựa chọn nhà đầu tư đối với dự án khu đô thị, khu dân cư nông thôn?`,
+        options: [
+          `A. Hiệu quả sử dụng đất`,
+          `B. Hiệu quả đầu tư phát triển ngành, lĩnh vực, địa phương`,
+          `C. Lợi ích xã hội, lợi ích nhà nước`,
+          `D. Phương án đầu tư kinh doanh`
+        ],
+        answer: 0,
+        explanation: `Đối với dự án đầu tư có sử dụng đất (như khu đô thị, khu dân cư nông thôn), tiêu chuẩn đánh giá tài chính sử dụng chỉ tiêu "Hiệu quả sử dụng đất" (như tỷ lệ nộp ngân sách nhà nước tối thiểu ngoài tiền sử dụng đất, tiền thuê đất).`,
+        legal: `Khoản 2 Điều 62 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 68,
+        bankNo: `Câu 428`,
+        topic: `Lựa chọn nhà đầu tư`,
+        question: `Sử dụng tiêu chuẩn đánh giá nào khi đánh giá về mặt tài chính đối với dự án thuộc trường hợp phải tổ chức đấu thầu theo quy định của pháp luật quản lý ngành, lĩnh vực?`,
+        options: [
+          `A. Hiệu quả sử dụng đất`,
+          `B. Hiệu quả đầu tư phát triển ngành, lĩnh vực, địa phương`,
+          `C. Lợi ích xã hội, lợi ích nhà nước`,
+          `D. Phương án đầu tư kinh doanh`
+        ],
+        answer: 1,
+        explanation: `Đối với dự án phải đấu thầu theo pháp luật quản lý ngành, lĩnh vực, tiêu chuẩn đánh giá tài chính sử dụng tiêu chuẩn "Hiệu quả đầu tư phát triển ngành, lĩnh vực, địa phương".`,
+        legal: `Khoản 2 Điều 62 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 69,
+        bankNo: `Câu 430`,
+        topic: `Lựa chọn nhà đầu tư`,
+        question: `Một trong các nguyên tắc xét duyệt trúng thầu đối với lựa chọn nhà đầu tư là gì?`,
+        options: [
+          `A. Nhà đầu tư có điểm tổng hợp cao nhất`,
+          `B. Nhà đầu tư đề xuất nộp ngân sách nhà nước lớn nhất`,
+          `C. Nhà đầu tư đề xuất phương án đầu tư kinh doanh hiệu quả nhất`,
+          `D. Phương án B và C đều đúng`
+        ],
+        answer: 0,
+        explanation: `Nhà đầu tư được xét duyệt trúng thầu khi có hồ sơ dự thầu hợp lệ, đáp ứng yêu cầu về năng lực kinh nghiệm, đáp ứng phương án đầu tư kinh doanh/kỹ thuật, đáp ứng hiệu quả sử dụng đất/ngành lĩnh vực và có điểm tổng hợp cao nhất.`,
+        legal: `Điều 63 Luật Đấu thầu số 22/2023/QH15`
+      },
+      {
+        id: 70,
+        bankNo: `Câu 1.2-TT22`,
+        topic: `Lựa chọn nhà đầu tư`,
+        question: `Theo Điều 7 và Điều 8 Luật Đấu thầu 2023, thông tin về lựa chọn nhà đầu tư phải đăng tải trên Hệ thống mạng đấu thầu quốc gia bao gồm nội dung nào?`,
+        options: [
+          `A. Thông tin về dự án đầu tư kinh doanh theo khoản 2 Điều 47`,
+          `B. Thông báo mời quan tâm, hồ sơ mời quan tâm và kết quả mời quan tâm`,
+          `C. Thông báo mời thầu, hồ sơ mời thầu và các nội dung sửa đổi, làm rõ hồ sơ (nếu có)`,
+          `D. Tất cả các phương án trên đều đúng`
+        ],
+        answer: 3,
+        explanation: `Khoản 2 Điều 7 Luật Đấu thầu số 22/2023/QH15 quy định đầy đủ danh mục thông tin lựa chọn nhà đầu tư phải đăng tải công khai trên Hệ thống mạng đấu thầu quốc gia gồm cả 3 nhóm thông tin trên cùng kết quả LCNĐT và thông tin chủ yếu của hợp đồng.`,
+        legal: `Khoản 2 Điều 7 Luật Đấu thầu số 22/2023/QH15`
+      }
+    ];
+
+    // Global application state (persisted via notebookAppApi)
+    let appState = {
+      mode: `exam`,
+      examHistory: [],
+      practiceAnswers: {},
+      flaggedIds: []
+    };
+
+    // Active runtime state for exam & practice
+    let currentExam = null;
+    let examTimerInterval = null;
+    let practiceList = [];
+    let practiceIndex = 0;
+
+    function getEl(id) {
+      return document.getElementById(id);
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, `&amp;`)
+        .replace(/</g, `&lt;`)
+        .replace(/>/g, `&gt;`)
+        .replace(/"/g, `&quot;`);
+    }
+
+    function formatTime(sec) {
+      const s = Math.max(0, Math.floor(sec));
+      const m = Math.floor(s / 60);
+      const r = s % 60;
+      return `${String(m).padStart(2, `0`)}:${String(r).padStart(2, `0`)}`;
+    }
+
+    async function persistState() {
+      if (window.notebookAppApi && typeof window.notebookAppApi.setAppState === `function`) {
+        try {
+          await window.notebookAppApi.setAppState(appState);
+        } catch (e) {
+          // Graceful fallback in non-host environments
+        }
+      }
+    }
+
+    function updateKPIs() {
+      const bankCount = getEl(`kpi-bank-count`);
+      const attemptsEl = getEl(`kpi-attempts`);
+      const passRateEl = getEl(`kpi-pass-rate`);
+      const bestScoreEl = getEl(`kpi-best-score`);
+      const bestStatusEl = getEl(`kpi-best-status`);
+      const masteredEl = getEl(`kpi-mastered`);
+      const flaggedEl = getEl(`kpi-flagged`);
+
+      if (bankCount) bankCount.textContent = `${QUESTION_BANK.length} câu`;
+
+      const hist = Array.isArray(appState.examHistory) ? appState.examHistory : [];
+      if (attemptsEl) attemptsEl.textContent = `${hist.length} lượt`;
+
+      if (hist.length > 0) {
+        const passed = hist.filter(h => h.pct >= 70).length;
+        const rate = Math.round((passed / hist.length) * 100);
+        if (passRateEl) passRateEl.textContent = `${passed}/${hist.length} lượt đạt chuẩn (${rate}%)`;
+
+        const best = hist.reduce((a, b) => (b.pct > a.pct ? b : a), hist[0]);
+        if (bestScoreEl) bestScoreEl.textContent = `${best.pct}%`;
+        if (bestStatusEl) {
+          bestStatusEl.textContent = best.pct >= 70 ? `Đạt ngưỡng chứng chỉ (${best.correct}/${best.total})` : `Cần ôn tập thêm (${best.correct}/${best.total})`;
+          bestStatusEl.className = `figure-delta ${best.pct >= 70 ? `positive` : ``}`;
+        }
+      } else {
+        if (passRateEl) passRateEl.textContent = `Chưa có bài thi nộp`;
+        if (bestScoreEl) bestScoreEl.textContent = `—`;
+        if (bestStatusEl) {
+          bestStatusEl.textContent = `Mục tiêu đạt chứng chỉ: ≥ 70%`;
+          bestStatusEl.className = `figure-delta positive`;
+        }
+      }
+
+      const pracCount = Object.keys(appState.practiceAnswers || {}).length;
+      const flagCount = (appState.flaggedIds || []).length;
+      if (masteredEl) masteredEl.textContent = `${pracCount} câu`;
+      if (flaggedEl) flaggedEl.textContent = `${flagCount} câu đang đánh dấu xem lại`;
+    }
+
+    function renderHistoryTable() {
+      const tbody = getEl(`history-tbody`);
+      if (!tbody) return;
+      const hist = Array.isArray(appState.examHistory) ? appState.examHistory : [];
+      if (hist.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="color: var(--on-surface-variant);">Chưa có lượt thi nào được ghi nhận. Hãy chọn phạm vi và bấm "Bắt đầu làm đề thi".</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = hist.slice().reverse().map(item => `
+        <tr>
+          <td>${escapeHtml(item.dateStr)}</td>
+          <td>${escapeHtml(item.topicLabel)}</td>
+          <td class="num">${item.correct} / ${item.total}</td>
+          <td class="num">${item.pct}%</td>
+          <td class="num">${escapeHtml(item.durationStr)}</td>
+          <td class="${item.pct >= 70 ? `status-pass` : `status-fail`}">${item.pct >= 70 ? `Đạt` : `Không đạt`}</td>
+        </tr>
+      `).join(``);
+    }
+
+    function switchMode(mode) {
+      appState.mode = mode;
+      const modes = [`exam`, `practice`, `lookup`];
+      modes.forEach(m => {
+        const view = getEl(`view-${m}`);
+        const tab = getEl(`tab-${m}`);
+        if (view) view.classList.toggle(`hidden`, m !== mode);
+        if (tab) tab.classList.toggle(`active`, m === mode);
+      });
+      if (mode === `practice`) initPracticeList();
+      if (mode === `lookup`) renderLookup();
+      persistState();
+    }
+
+    // === EXAM LOGIC ===
+    function shuffleArray(arr) {
+      const copy = arr.slice();
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = copy[i];
+        copy[i] = copy[j];
+        copy[j] = tmp;
+      }
+      return copy;
+    }
+
+    function startExam() {
+      const topicEl = getEl(`exam-topic`);
+      const countEl = getEl(`exam-count`);
+      const minEl = getEl(`exam-minutes`);
+      const topicVal = topicEl ? topicEl.value : `all`;
+      const requestedCount = countEl ? parseInt(countEl.value, 10) : 30;
+      const minutes = minEl ? Math.max(5, Math.min(90, parseInt(minEl.value, 10) || 30)) : 30;
+
+      let pool = topicVal === `all`
+        ? QUESTION_BANK.slice()
+        : QUESTION_BANK.filter(q => q.topic === topicVal);
+
+      if (pool.length === 0) return;
+
+      const selected = shuffleArray(pool).slice(0, Math.min(requestedCount, pool.length));
+      const topicLabel = topicVal === `all` ? `Tổng hợp 7 chuyên đề` : topicVal;
+
+      currentExam = {
+        questions: selected,
+        answers: {},
+        flags: {},
+        index: 0,
+        submitted: false,
+        totalSeconds: minutes * 60,
+        remainingSeconds: minutes * 60,
+        topicLabel: topicLabel
+      };
+
+      const setupPanel = getEl(`exam-setup-panel`);
+      const activePanel = getEl(`exam-active-panel`);
+      const resultPanel = getEl(`exam-result-panel`);
+      const submitBtn = getEl(`exam-submit-btn`);
+      const newBtn = getEl(`exam-new-btn`);
+
+      if (setupPanel) setupPanel.classList.add(`hidden`);
+      if (activePanel) activePanel.classList.remove(`hidden`);
+      if (resultPanel) resultPanel.classList.add(`hidden`);
+      if (submitBtn) {
+        submitBtn.classList.remove(`hidden`);
+        submitBtn.dataset.armed = `false`;
+        submitBtn.textContent = `Nộp bài thi`;
+      }
+      if (newBtn) newBtn.classList.add(`hidden`);
+
+      renderExamQuestion();
+      renderExamPalette();
+      startExamTimer();
+    }
+
+    function startExamTimer() {
+      if (examTimerInterval) clearInterval(examTimerInterval);
+      updateTimerDisplay();
+      examTimerInterval = setInterval(() => {
+        if (!currentExam || currentExam.submitted) {
+          clearInterval(examTimerInterval);
+          return;
+        }
+        currentExam.remainingSeconds -= 1;
+        updateTimerDisplay();
+        if (currentExam.remainingSeconds <= 0) {
+          clearInterval(examTimerInterval);
+          finalizeExam();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const timerEl = getEl(`exam-timer`);
+      const progEl = getEl(`exam-progress-text`);
+      if (!currentExam) return;
+      if (timerEl) {
+        timerEl.textContent = formatTime(currentExam.remainingSeconds);
+        timerEl.classList.toggle(`urgent`, currentExam.remainingSeconds <= 120);
+      }
+      if (progEl) {
+        const answered = Object.keys(currentExam.answers).length;
+        progEl.textContent = `Đã trả lời ${answered}/${currentExam.questions.length}`;
+      }
+    }
+
+    function renderExamQuestion() {
+      if (!currentExam) return;
+      const q = currentExam.questions[currentExam.index];
+      const numEl = getEl(`exam-q-num`);
+      const topicEl = getEl(`exam-q-topic`);
+      const textEl = getEl(`exam-q-text`);
+      const optsEl = getEl(`exam-options-list`);
+      const expBox = getEl(`exam-explanation`);
+      const expBody = getEl(`exam-explanation-body`);
+      const citeEl = getEl(`exam-legal-cite`);
+      const flagBtn = getEl(`exam-flag-btn`);
+      const prevBtn = getEl(`exam-prev-btn`);
+      const nextBtn = getEl(`exam-next-btn`);
+
+      if (numEl) numEl.textContent = `Câu ${currentExam.index + 1} / ${currentExam.questions.length} (${q.bankNo})`;
+      if (topicEl) topicEl.textContent = q.topic;
+      if (textEl) textEl.textContent = q.question;
+      if (flagBtn) {
+        const isFlagged = Boolean(currentExam.flags[q.id]);
+        flagBtn.textContent = isFlagged ? `Đã đánh dấu xem lại` : `Đánh dấu xem lại`;
+        flagBtn.classList.toggle(`btn-primary`, isFlagged);
+        flagBtn.classList.toggle(`btn-ghost`, !isFlagged);
+      }
+      if (prevBtn) prevBtn.disabled = currentExam.index === 0;
+      if (nextBtn) nextBtn.disabled = currentExam.index === currentExam.questions.length - 1;
+
+      const userChoice = currentExam.answers[q.id];
+      if (optsEl) {
+        optsEl.innerHTML = q.options.map((opt, idx) => {
+          const letter = opt.slice(0, 2);
+          const body = opt.slice(3);
+          let cls = `option-btn`;
+          if (currentExam.submitted) {
+            if (idx === q.answer) cls += ` correct`;
+            else if (userChoice === idx) cls += ` wrong`;
+          } else if (userChoice === idx) {
+            cls += ` selected`;
+          }
+          return `
+            <button type="button" class="${cls}" ${currentExam.submitted ? `disabled` : ``} onclick="selectExamOption(${idx})">
+              <span class="option-key">${escapeHtml(letter)}</span>
+              <span>${escapeHtml(body)}</span>
+            </button>
+          `;
+        }).join(``);
+      }
+
+      if (expBox && expBody && citeEl) {
+        if (currentExam.submitted) {
+          expBox.classList.remove(`hidden`);
+          expBody.textContent = q.explanation;
+          citeEl.textContent = `Căn cứ pháp lý: ${q.legal}`;
+        } else {
+          expBox.classList.add(`hidden`);
+        }
+      }
+      updateTimerDisplay();
+    }
+
+    function selectExamOption(idx) {
+      if (!currentExam || currentExam.submitted) return;
+      const q = currentExam.questions[currentExam.index];
+      currentExam.answers[q.id] = idx;
+      renderExamQuestion();
+      renderExamPalette();
+    }
+
+    function toggleExamFlag() {
+      if (!currentExam) return;
+      const q = currentExam.questions[currentExam.index];
+      currentExam.flags[q.id] = !currentExam.flags[q.id];
+      renderExamQuestion();
+      renderExamPalette();
+    }
+
+    function moveExamQuestion(delta) {
+      if (!currentExam) return;
+      const next = currentExam.index + delta;
+      if (next >= 0 && next < currentExam.questions.length) {
+        currentExam.index = next;
+        renderExamQuestion();
+        renderExamPalette();
+      }
+    }
+
+    function jumpExamQuestion(idx) {
+      if (!currentExam) return;
+      currentExam.index = idx;
+      renderExamQuestion();
+      renderExamPalette();
+    }
+
+    function renderExamPalette() {
+      const palette = getEl(`exam-palette`);
+      if (!palette || !currentExam) return;
+      palette.innerHTML = currentExam.questions.map((q, idx) => {
+        let cls = `palette-item`;
+        if (idx === currentExam.index) cls += ` current`;
+        const ans = currentExam.answers[q.id];
+        if (currentExam.submitted) {
+          if (ans === q.answer) cls += ` correct-mark`;
+          else cls += ` wrong-mark`;
+        } else if (ans !== undefined) {
+          cls += ` answered`;
+        }
+        if (currentExam.flags[q.id]) cls += ` flagged`;
+        return `<button type="button" class="${cls}" onclick="jumpExamQuestion(${idx})">${idx + 1}</button>`;
+      }).join(``);
+    }
+
+    function submitExam(btn) {
+      if (!currentExam || currentExam.submitted) return;
+      const answeredCount = Object.keys(currentExam.answers).length;
+      if (answeredCount < currentExam.questions.length && btn && btn.dataset.armed !== `true`) {
+        btn.dataset.armed = `true`;
+        btn.textContent = `Còn ${currentExam.questions.length - answeredCount} câu chưa làm — Bấm lại để nộp`;
+        return;
+      }
+      finalizeExam();
+    }
+
+    function finalizeExam() {
+      if (!currentExam || currentExam.submitted) return;
+      currentExam.submitted = true;
+      if (examTimerInterval) clearInterval(examTimerInterval);
+
+      const total = currentExam.questions.length;
+      let correct = 0;
+      const topicStats = {};
+
+      currentExam.questions.forEach(q => {
+        if (!topicStats[q.topic]) topicStats[q.topic] = { total: 0, correct: 0 };
+        topicStats[q.topic].total += 1;
+        if (currentExam.answers[q.id] === q.answer) {
+          correct += 1;
+          topicStats[q.topic].correct += 1;
+        }
+      });
+
+      const pct = Math.round((correct / total) * 100);
+      const elapsedSec = currentExam.totalSeconds - Math.max(0, currentExam.remainingSeconds);
+      const durationStr = formatTime(elapsedSec);
+      const now = new Date();
+      const dateStr = `${String(now.getDate()).padStart(2, `0`)}/${String(now.getMonth() + 1).padStart(2, `0`)}/${now.getFullYear()} ${String(now.getHours()).padStart(2, `0`)}:${String(now.getMinutes()).padStart(2, `0`)}`;
+
+      appState.examHistory = appState.examHistory || [];
+      appState.examHistory.push({
+        dateStr,
+        topicLabel: currentExam.topicLabel,
+        correct,
+        total,
+        pct,
+        durationStr
+      });
+      persistState();
+      updateKPIs();
+      renderHistoryTable();
+
+      const submitBtn = getEl(`exam-submit-btn`);
+      const newBtn = getEl(`exam-new-btn`);
+      const resultPanel = getEl(`exam-result-panel`);
+      const verdictEl = getEl(`res-verdict`);
+      const scoreEl = getEl(`res-score`);
+      const pctEl = getEl(`res-pct`);
+      const durEl = getEl(`res-duration`);
+      const breakdownEl = getEl(`res-topic-breakdown`);
+
+      if (submitBtn) submitBtn.classList.add(`hidden`);
+      if (newBtn) newBtn.classList.remove(`hidden`);
+      if (resultPanel) resultPanel.classList.remove(`hidden`);
+
+      if (verdictEl) {
+        verdictEl.textContent = pct >= 70 ? `ĐẠT YÊU CẦU` : `CHƯA ĐẠT`;
+        verdictEl.style.color = pct >= 70 ? `var(--positive)` : `var(--error)`;
+      }
+      if (scoreEl) scoreEl.textContent = `${correct} / ${total}`;
+      if (pctEl) pctEl.textContent = `Tỷ lệ chính xác: ${pct}%`;
+      if (durEl) durEl.textContent = durationStr;
+
+      if (breakdownEl) {
+        breakdownEl.innerHTML = Object.keys(topicStats).map(t => {
+          const st = topicStats[t];
+          const p = Math.round((st.correct / st.total) * 100);
+          return `
+            <div class="topic-bar-row">
+              <span style="font-size: 0.875rem; font-weight: 500;">${escapeHtml(t)}</span>
+              <div class="bar-track">
+                <div class="bar-fill ${p >= 70 ? `pass` : `fail`}" style="width: ${p}%;"></div>
+              </div>
+              <span style="font-family: var(--font-mono); font-size: 0.8125rem; text-align: right;">${st.correct}/${st.total} (${p}%)</span>
+            </div>
+          `;
+        }).join(``);
+      }
+
+      renderExamQuestion();
+      renderExamPalette();
+    }
+
+    function resetToExamSetup() {
+      if (examTimerInterval) clearInterval(examTimerInterval);
+      currentExam = null;
+      const setupPanel = getEl(`exam-setup-panel`);
+      const activePanel = getEl(`exam-active-panel`);
+      if (setupPanel) setupPanel.classList.remove(`hidden`);
+      if (activePanel) activePanel.classList.add(`hidden`);
+    }
+
+    function clearExamHistory(btn) {
+      if (btn && btn.dataset.armed !== `true`) {
+        btn.dataset.armed = `true`;
+        btn.textContent = `Xác nhận xóa lịch sử?`;
+        return;
+      }
+      if (btn) {
+        btn.dataset.armed = `false`;
+        btn.textContent = `Xóa lịch sử`;
+      }
+      appState.examHistory = [];
+      persistState();
+      updateKPIs();
+      renderHistoryTable();
+    }
+
+    function downloadCsvFallback(csvContent, filename) {
+      if (window.notebookAppApi && typeof window.notebookAppApi.triggerFileDownload === `function`) {
+        window.notebookAppApi.triggerFileDownload({
+          content: csvContent,
+          contentType: `text/csv`,
+          encoding: `UTF-8`,
+          filename: filename
+        });
+        return true;
+      }
+      try {
+        const blob = new Blob([csvContent], { type: `text/csv;charset=utf-8;` });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement(`a`);
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function exportExamReport() {
+      if (!currentExam || !currentExam.submitted) return;
+      const lines = [`STT,Ma cau,Chuyen de,Cau hoi,Lua chon cua ban,Dap an dung,Ket qua,Can cu phap ly`];
+      currentExam.questions.forEach((q, i) => {
+        const userIdx = currentExam.answers[q.id];
+        const userText = userIdx !== undefined ? q.options[userIdx] : `Chua tra loi`;
+        const ansText = q.options[q.answer];
+        const isOk = userIdx === q.answer ? `Dung` : `Sai`;
+        const csvEsc = (v) => `"${String(v).replace(/"/g, `""`)}"`;
+        lines.push([i + 1, q.bankNo, q.topic, q.question, userText, ansText, isOk, q.legal].map(csvEsc).join(`,`));
+      });
+      downloadCsvFallback(`\uFEFF` + lines.join(`\n`), `ket_qua_thi_dau_thau.csv`);
+    }
+
+    // === PRACTICE MODE ===
+    function initPracticeList() {
+      const topicEl = getEl(`practice-topic`);
+      const filterEl = getEl(`practice-filter-mode`);
+      const topicVal = topicEl ? topicEl.value : `all`;
+      const filterVal = filterEl ? filterEl.value : `all`;
+      const ansMap = appState.practiceAnswers || {};
+      const flagged = appState.flaggedIds || [];
+
+      practiceList = QUESTION_BANK.filter(q => {
+        if (topicVal !== `all` && q.topic !== topicVal) return false;
+        if (filterVal === `unanswered` && ansMap[q.id] !== undefined) return false;
+        if (filterVal === `wrong` && (ansMap[q.id] === undefined || ansMap[q.id] === q.answer)) return false;
+        if (filterVal === `flagged` && !flagged.includes(q.id)) return false;
+        return true;
+      });
+
+      if (practiceIndex >= practiceList.length) practiceIndex = 0;
+      renderPracticeQuestion();
+      renderPracticePalette();
+    }
+
+    function renderPracticeQuestion() {
+      const numEl = getEl(`prac-q-num`);
+      const topicEl = getEl(`prac-q-topic`);
+      const textEl = getEl(`prac-q-text`);
+      const optsEl = getEl(`prac-options-list`);
+      const expBox = getEl(`prac-explanation`);
+      const expBody = getEl(`prac-explanation-body`);
+      const citeEl = getEl(`prac-legal-cite`);
+      const flagBtn = getEl(`prac-flag-btn`);
+      const metaEl = getEl(`prac-counter-meta`);
+
+      if (practiceList.length === 0) {
+        if (numEl) numEl.textContent = `Không có câu hỏi phù hợp`;
+        if (topicEl) topicEl.textContent = `Bộ lọc trống`;
+        if (textEl) textEl.textContent = `Không tìm thấy câu hỏi nào khớp điều kiện lọc hiện tại. Hãy chọn "Tất cả câu hỏi trong chuyên đề" để tiếp tục luyện tập.`;
+        if (optsEl) optsEl.innerHTML = ``;
+        if (expBox) expBox.classList.add(`hidden`);
+        if (metaEl) metaEl.textContent = `0 / 0`;
+        return;
+      }
+
+      const q = practiceList[practiceIndex];
+      const userChoice = (appState.practiceAnswers || {})[q.id];
+      const isFlagged = (appState.flaggedIds || []).includes(q.id);
+
+      if (numEl) numEl.textContent = `Câu ${practiceIndex + 1} / ${practiceList.length} (${q.bankNo})`;
+      if (topicEl) topicEl.textContent = q.topic;
+      if (textEl) textEl.textContent = q.question;
+      if (metaEl) metaEl.textContent = `Đang xem câu ${practiceIndex + 1} trên ${practiceList.length}`;
+      if (flagBtn) {
+        flagBtn.textContent = isFlagged ? `Đã đánh dấu` : `Đánh dấu`;
+        flagBtn.classList.toggle(`btn-primary`, isFlagged);
+        flagBtn.classList.toggle(`btn-ghost`, !isFlagged);
+      }
+
+      if (optsEl) {
+        optsEl.innerHTML = q.options.map((opt, idx) => {
+          const letter = opt.slice(0, 2);
+          const body = opt.slice(3);
+          let cls = `option-btn`;
+          if (userChoice !== undefined) {
+            if (idx === q.answer) cls += ` correct`;
+            else if (userChoice === idx) cls += ` wrong`;
+          }
+          return `
+            <button type="button" class="${cls}" onclick="selectPracticeOption(${idx})">
+              <span class="option-key">${escapeHtml(letter)}</span>
+              <span>${escapeHtml(body)}</span>
+            </button>
+          `;
+        }).join(``);
+      }
+
+      if (expBox && expBody && citeEl) {
+        if (userChoice !== undefined) {
+          expBox.classList.remove(`hidden`);
+          expBody.textContent = q.explanation;
+          citeEl.textContent = `Căn cứ pháp lý: ${q.legal}`;
+        } else {
+          expBox.classList.add(`hidden`);
+        }
+      }
+    }
+
+    function selectPracticeOption(idx) {
+      if (practiceList.length === 0) return;
+      const q = practiceList[practiceIndex];
+      appState.practiceAnswers = appState.practiceAnswers || {};
+      appState.practiceAnswers[q.id] = idx;
+      persistState();
+      updateKPIs();
+      renderPracticeQuestion();
+      renderPracticePalette();
+    }
+
+    function togglePracticeFlag() {
+      if (practiceList.length === 0) return;
+      const q = practiceList[practiceIndex];
+      appState.flaggedIds = appState.flaggedIds || [];
+      const idx = appState.flaggedIds.indexOf(q.id);
+      if (idx === -1) appState.flaggedIds.push(q.id);
+      else appState.flaggedIds.splice(idx, 1);
+      persistState();
+      updateKPIs();
+      renderPracticeQuestion();
+      renderPracticePalette();
+    }
+
+    function movePractice(delta) {
+      if (practiceList.length === 0) return;
+      const next = practiceIndex + delta;
+      if (next >= 0 && next < practiceList.length) {
+        practiceIndex = next;
+        renderPracticeQuestion();
+        renderPracticePalette();
+      }
+    }
+
+    function jumpPractice(idx) {
+      practiceIndex = idx;
+      renderPracticeQuestion();
+      renderPracticePalette();
+    }
+
+    function renderPracticePalette() {
+      const palette = getEl(`prac-palette`);
+      if (!palette) return;
+      const ansMap = appState.practiceAnswers || {};
+      const flagged = appState.flaggedIds || [];
+      palette.innerHTML = practiceList.map((q, idx) => {
+        let cls = `palette-item`;
+        if (idx === practiceIndex) cls += ` current`;
+        if (ansMap[q.id] !== undefined) {
+          cls += ansMap[q.id] === q.answer ? ` correct-mark` : ` wrong-mark`;
+        }
+        if (flagged.includes(q.id)) cls += ` flagged`;
+        return `<button type="button" class="${cls}" onclick="jumpPractice(${idx})">${idx + 1}</button>`;
+      }).join(``);
+    }
+
+    function resetPracticeProgress(btn) {
+      if (btn && btn.dataset.armed !== `true`) {
+        btn.dataset.armed = `true`;
+        btn.textContent = `Bấm lại để xác nhận đặt lại`;
+        return;
+      }
+      if (btn) {
+        btn.dataset.armed = `false`;
+        btn.textContent = `Đặt lại tiến độ luyện tập`;
+      }
+      appState.practiceAnswers = {};
+      appState.flaggedIds = [];
+      persistState();
+      updateKPIs();
+      initPracticeList();
+    }
+
+    // === LOOKUP MODE ===
+    function getFilteredLookup() {
+      const searchEl = getEl(`lookup-search`);
+      const topicEl = getEl(`lookup-topic`);
+      const sourceEl = getEl(`lookup-source`);
+      const kw = (searchEl ? searchEl.value : ``).trim().toLowerCase();
+      const topic = topicEl ? topicEl.value : `all`;
+      const src = sourceEl ? sourceEl.value : `all`;
+
+      return QUESTION_BANK.filter(q => {
+        if (topic !== `all` && q.topic !== topic) return false;
+        if (src !== `all` && !q.legal.toLowerCase().includes(src.toLowerCase())) return false;
+        if (kw) {
+          const hay = `${q.bankNo} ${q.topic} ${q.question} ${q.options.join(` `)} ${q.explanation} ${q.legal}`.toLowerCase();
+          if (!hay.includes(kw)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderLookup() {
+      const container = getEl(`lookup-results`);
+      const countLabel = getEl(`lookup-count-label`);
+      if (!container) return;
+      const list = getFilteredLookup();
+      if (countLabel) countLabel.textContent = `Hiển thị ${list.length} / ${QUESTION_BANK.length} câu hỏi phù hợp`;
+
+      if (list.length === 0) {
+        container.innerHTML = `<div class="inline-notice">Không tìm thấy câu hỏi nào khớp với từ khóa hoặc bộ lọc văn bản hiện tại.</div>`;
+        return;
+      }
+
+      container.innerHTML = list.map(q => `
+        <article class="bank-item">
+          <div class="q-meta">
+            <span class="q-num">${escapeHtml(q.bankNo)}</span>
+            <span class="stamp-tag">${escapeHtml(q.topic)}</span>
+          </div>
+          <p class="q-text" style="margin-bottom: var(--space-sm);">${escapeHtml(q.question)}</p>
+          <ul class="bank-options">
+            ${q.options.map((opt, i) => `
+              <li class="bank-opt ${i === q.answer ? `is-answer` : ``}">
+                ${escapeHtml(opt)}${i === q.answer ? ` (Đáp án đúng)` : ``}
+              </li>
+            `).join(``)}
+          </ul>
+          <div class="explanation-box" style="margin-top: var(--space-sm);">
+            <div class="explanation-title">Giải thích chi tiết</div>
+            <div>${escapeHtml(q.explanation)}</div>
+            <div class="legal-cite">Căn cứ pháp lý: ${escapeHtml(q.legal)}</div>
+          </div>
+        </article>
+      `).join(``);
+    }
+
+    function exportBankCsv() {
+      const list = getFilteredLookup();
+      const lines = [`Ma cau,Chuyen de,Cau hoi,Dap an dung,Giai thich,Can cu phap ly`];
+      const csvEsc = (v) => `"${String(v).replace(/"/g, `""`)}"`;
+      list.forEach(q => {
+        lines.push([q.bankNo, q.topic, q.question, q.options[q.answer], q.explanation, q.legal].map(csvEsc).join(`,`));
+      });
+      downloadCsvFallback(`\uFEFF` + lines.join(`\n`), `ngan_hang_cau_hoi_dau_thau.csv`);
+    }
+
+    // === INITIALIZATION ===
+    async function initApp() {
+      if (window.notebookAppApi && typeof window.notebookAppApi.getAppState === `function`) {
+        try {
+          const saved = await window.notebookAppApi.getAppState();
+          if (saved && typeof saved === `object`) {
+            appState = {
+              mode: saved.mode || `exam`,
+              examHistory: Array.isArray(saved.examHistory) ? saved.examHistory : [],
+              practiceAnswers: saved.practiceAnswers && typeof saved.practiceAnswers === `object` ? saved.practiceAnswers : {},
+              flaggedIds: Array.isArray(saved.flaggedIds) ? saved.flaggedIds : []
+            };
+          }
+        } catch (e) {
+          // Proceed with clean defaults
+        }
+      }
+
+      updateKPIs();
+      renderHistoryTable();
+      switchMode(appState.mode || `exam`);
+
+      if (window.notebookAppApi && typeof window.notebookAppApi.notifyAppReady === `function`) {
+        window.notebookAppApi.notifyAppReady();
+      }
+    }
+
+    initApp();
+  </script>
+</body>
+</html>
